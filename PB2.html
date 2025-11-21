@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>排班查询</title>
+    <link rel="stylesheet" type="text/css" href="css/PB2.css">
+    <script src="js/pb2.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <div class="section">
+            <label for="personSelect">
+                按人员：
+                <select id="personSelect" aria-label="选择人员">
+                    <option value="">请选择</option>
+                </select>
+            </label>
+            <hr>
+            <label for="date">
+                按日期：
+                <input type="date" id="date" aria-label="选择日期">
+            </label>
+        </div>
+        <div class="section ban">
+            <div class="grid-wrapper">
+                <div class="grid-row head"><div id="bai-title">白班</div></div>
+                <div class="grid-row" id="bai-1">
+                    <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div>
+                </div>
+                <div class="grid-row" id="bai-2">
+                    <div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
+                </div>
+                <div class="grid-row" id="bai-3">
+                    <div>11</div><div>12</div><div>13</div><div>14</div><div>15</div>
+                </div>
+                <div class="grid-row" id="bai-4">
+                    <div>16</div><div>17</div><div>18</div><div>19</div><div>20</div>
+                </div>
+            </div>
+        </div>
+        <div class="section ban">
+            <div class="grid-wrapper">
+                <div class="grid-row head"><div id="ye-title">夜班</div></div>
+                <div class="grid-row" id="ye-1">
+                    <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div>
+                </div>
+                <div class="grid-row" id="ye-2">
+                    <div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
+                </div>
+                <div class="grid-row" id="ye-3">
+                    <div>11</div><div>12</div><div>13</div><div>14</div><div>15</div>
+                </div>
+                <div class="grid-row" id="ye-4">
+                    <div>16</div><div>17</div><div>18</div><div>19</div><div>20</div>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <div id="result"></div>
+        </div>
+    </div>
+</body>
+</html>
