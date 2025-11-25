@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>参数计算</title>
+    <link rel="stylesheet" href="css/dunwei.css">
+</head>
+<body>
+    <div class="fixed-header">
+        <div class="ton-display">总计: <span id="total-kilogram">0.0000</span> Kg</div>
+        <button class="view-ratio-btn" onclick="showRatioModal()">查看参数</button>
+    </div>
+    
+    <div class="container">
+        <div id="items-container">
+            <!-- 动态生成项目 -->
+        </div>
+        
+        <button class="clear-btn" onclick="clearAll()">清空</button>
+        
+        <!-- 额外空间，防止键盘遮挡 -->
+        <div class="extra-space"></div>
+    </div>
+    
+    <!-- 弹出窗口 -->
+    <div id="ratioModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeRatioModal()">&times;</span>
+            <h2>参数列表</h2>
+            <table class="ratio-table">
+                <thead>
+                    <tr>
+                        <th>产品名称</th>
+                        <th>参数值</th>
+                    </tr>
+                </thead>
+                <tbody id="ratio-table-body">
+                    <!-- 动态填充数据 -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script src="js/util.js"></script>
+    <script>
+        // 从后端获取数据
+        const data = [
+            { name: '950(瓶)', ratio: 0.97945 },
+            { name: '780(瓶)', ratio: 0.80418 },
+            { name: '450(瓶)', ratio: 0.46395 },
+            { name: '260(瓶)', ratio: 0.26806 },
+            { name: '250ml(包)', ratio: 0.25775 },
+            { name: '200ml(包)', ratio: 0.2062 }
+        ];
+        
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePage();
+        });
+        
+        function initializePage() {
+            const container = document.getElementById('items-container');
+            container.innerHTML = '';
+            
+            data.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'item';
+                div.innerHTML = `
+                    <div class="item-label">${item.name}</div>
+                    <input type="text" class="item-input" id="input-${item.name}" 
+                           value="${getCookie(item.name) || ''}" 
+                           data-ratio="${item.ratio}" 
+                           placeholder="输入数量" 
+                           oninput="calculateTotal()">
+                `;
+                container.appendChild(div);
+            });
+            
+            // 计算初始总吨数
+            calculateTotal();
+            
+            // 填充折吨比表格
+            fillRatioTable();
+        }
+        
+        function calculateTotal() {
+            let total = 0;
+            let hasError = false;
+            
+            data.forEach(item => {
+                const input = document.getElementById(`input-${item.name}`);
+                let valueStr = input.value.trim();
+                
+                // 保存到cookie，有效期一个月
+                util.setCookie(item.name, valueStr, 30);
+                
+                if (valueStr === '') {
+                    // 空值处理
+                    return;
+                }
+                
+                // 移除开头和结尾的+、*符号
+                valueStr = util.removeLeadingTrailingOperators(valueStr);
+                
+                // 检查是否为合法的数学表达式
+                if (util.isValidExpression(valueStr)) {
+                    try {
+                        // 简单计算，使用Function构造器但限制范围
+                        // 构造一个安全的计算函数
+                        const calcFunction = new Function('return (' + valueStr + ')');
+                        const value = calcFunction();
+                        
+                        // 检查结果是否为有效数字
+                        if (typeof value === 'number' && !isNaN(value) && isFinite(value)) {
+                            // 计算公斤数：数量 * 参数值
+                            const kilograms = value * item.ratio;
+                            total += kilograms;
+                        } else {
+                            hasError = true;
+                        }
+                    } catch (e) {
+                        hasError = true;
+                    }
+                } else {
+                    hasError = true;
+                }
+            });
+            
+            // 更新显示的总公斤数，保留四位小数
+            if (hasError) {
+                document.getElementById('total-kilogram').textContent = '输入有误';
+            } else {
+                document.getElementById('total-kilogram').textContent = total.toFixed(4);
+            }
+        }
+        
+        function clearAll() {
+            if (confirm('确定要清空所有输入吗？')) {
+                data.forEach(item => {
+                    const input = document.getElementById(`input-${item.name}`);
+                    input.value = '';
+                    util.setCookie(item.name, '', -1); // 删除cookie
+                });
+                calculateTotal();
+            }
+        }
+        
+        function showRatioModal() {
+            document.getElementById('ratioModal').style.display = 'block';
+        }
+        
+        function closeRatioModal() {
+            document.getElementById('ratioModal').style.display = 'none';
+        }
+        
+        function fillRatioTable() {
+            const tbody = document.getElementById('ratio-table-body');
+            tbody.innerHTML = '';
+            
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>${item.ratio}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        // 点击弹出窗口外部关闭
+        window.onclick = function(event) {
+            const modal = document.getElementById('ratioModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
