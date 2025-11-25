@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>颜色转换器</title>
+    <link rel="stylesheet" href="css/color-converter.css">
+</head>
+<body>
+    <div class="container">
+        <h1>颜色转换器</h1>
+        
+        <div class="form-group">
+            <div class="color-input-group">
+                <span class="color-label">HEX:</span>
+                <input type="text" id="hexInput" class="color-input" placeholder="FF0000" value="FF0000">
+                <button class="copy-btn" onclick="copyToClipboard('hexInput')">复制</button>
+            </div>
+            
+            <div class="color-input-group">
+                <span class="color-label">RGB:</span>
+                <input type="text" id="rgbInput" class="color-input" placeholder="255,0,0" value="255,0,0">
+                <button class="copy-btn" onclick="copyToClipboard('rgbInput')">复制</button>
+            </div>
+            
+            <div class="color-input-group">
+                <span class="color-label">CMYK:</span>
+                <input type="text" id="cmykInput" class="color-input" placeholder="0,100,100,0,1" value="0,100,100,0,1">
+                <button class="copy-btn" onclick="copyToClipboard('cmykInput')">复制</button>
+            </div>
+            
+            <div class="color-input-group">
+                <span class="color-label">HSV:</span>
+                <input type="text" id="hsvInput" class="color-input" placeholder="0,100,100,1" value="0,100,100,1">
+                <button class="copy-btn" onclick="copyToClipboard('hsvInput')">复制</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/color-converter.js"></script>
+</body>
+</html>
