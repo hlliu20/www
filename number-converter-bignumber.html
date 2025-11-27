@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>BigNumber进制转换器</title>
+    <link rel="stylesheet" href="css/number-converter-bignumber.css">
+</head>
+<body>
+    <div class="container">
+        <h1>BigNumber进制转换器</h1>
+        
+        <div class="converter-display">
+            <div class="base-row" data-base="2">
+                <div class="base-label">二进制 (2)</div>
+                <div class="base-value" id="binary-value">0</div>
+            </div>
+            <div class="base-row" data-base="8">
+                <div class="base-label">八进制 (8)</div>
+                <div class="base-value" id="octal-value">0</div>
+            </div>
+            <div class="base-row active" data-base="10">
+                <div class="base-label">十进制 (10)</div>
+                <div class="base-value" id="decimal-value">0</div>
+            </div>
+            <div class="base-row" data-base="16">
+                <div class="base-label">十六进制 (16)</div>
+                <div class="base-value" id="hex-value">0</div>
+            </div>
+        </div>
+        
+        <div class="keyboard-section">
+            <div class="keyboard">
+                <div class="keyboard-row">
+                    <button class="key" data-value="1">1</button>
+                    <button class="key" data-value="2">2</button>
+                    <button class="key" data-value="3">3</button>
+                    <button class="key" data-value="A">A</button>
+                    <button class="key" data-value="B">B</button>
+                </div>
+                <div class="keyboard-row">
+                    <button class="key" data-value="4">4</button>
+                    <button class="key" data-value="5">5</button>
+                    <button class="key" data-value="6">6</button>
+                    <button class="key" data-value="C">C</button>
+                    <button class="key" data-value="D">D</button>
+                </div>
+                <div class="keyboard-row">
+                    <button class="key" data-value="7">7</button>
+                    <button class="key" data-value="8">8</button>
+                    <button class="key" data-value="9">9</button>
+                    <button class="key" data-value="E">E</button>
+                    <button class="key" data-value="F">F</button>
+                </div>
+                <div class="keyboard-row">
+                    <button class="key" data-value="0">0</button>
+                    <button class="key clear span-2" data-action="clear">CLR</button>
+                    <button class="key delete span-2" data-action="delete">DEL</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="toast" id="toast">已复制到剪贴板</div>
+        
+        <div class="back-section">
+            <a href="tool.html" class="btn-back">返回工具页面</a>
+        </div>
+    </div>
+    
+    <script src="js/bignumber.min.js"></script>
+    <script src="js/number-converter-bignumber.js"></script>
+</body>
+</html>

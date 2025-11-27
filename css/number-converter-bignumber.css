@@ -1,0 +1,228 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #f5f5f5;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.container {
+    width: 100%;
+    max-width: 400px;
+    background: white;
+    border-radius: 12px;
+    padding: 30px 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #333;
+    font-size: 1.5rem;
+}
+
+.converter-display {
+    margin-bottom: 25px;
+}
+
+.base-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.base-row:last-child {
+    border-bottom: none;
+}
+
+.base-row:hover {
+    background-color: #f8f9fa;
+}
+
+.base-row.active {
+    background-color: #e3f2fd;
+    border-radius: 8px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.base-label {
+    font-weight: 600;
+    color: #333;
+    font-size: 1rem;
+}
+
+.base-value {
+    font-family: 'Courier New', monospace;
+    font-size: 0.95rem;
+    color: #007bff;
+    word-break: break-all;
+    max-width: 65%;
+    text-align: right;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.base-value:hover {
+    background-color: #f0f0f0;
+}
+
+.base-value.truncated {
+    color: #666;
+}
+
+.keyboard-section {
+    margin-bottom: 20px;
+}
+
+.keyboard {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: white;
+    padding: 10px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 12px 12px 0 0;
+}
+
+.keyboard-row {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+}
+
+.key {
+    flex: 1;
+    padding: 18px 0;
+    background-color: #fff;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.key.span-2 {
+    flex: 2;
+}
+
+.key:hover {
+    background-color: #f8f9fa;
+    border-color: #007bff;
+}
+
+.key:active {
+    transform: translateY(1px);
+    background-color: #e3f2fd;
+}
+
+.key.delete, .key.clear {
+    background-color: #dc3545;
+    color: white;
+    border-color: #dc3545;
+    font-size: 0.9rem;
+}
+
+.key.delete:hover, .key.clear:hover {
+    background-color: #c82333;
+    border-color: #c82333;
+}
+
+.key.disabled {
+    background-color: #f8f9fa;
+    color: #aaa;
+    border-color: #ddd;
+    cursor: not-allowed;
+}
+
+.key.disabled:hover {
+    background-color: #f8f9fa;
+    border-color: #ddd;
+    transform: none;
+}
+
+.toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+    z-index: 1000;
+}
+
+.toast.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.back-section {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-back {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #6c757d;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: background-color 0.3s;
+    text-align: center;
+    min-width: 120px;
+}
+
+.btn-back:hover {
+    background-color: #5a6268;
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 20px 15px;
+        margin: 10px;
+        margin-bottom: 280px; /* 为固定键盘留出空间 */
+    }
+    
+    .key {
+        padding: 15px 0;
+        font-size: 1rem;
+        min-height: 45px;
+    }
+}
