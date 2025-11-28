@@ -6,15 +6,23 @@
  * 17, 20 - 特殊班次
  */
 let ban = null;
+let currentDataYearMonth = null; // 当前加载数据的年月，格式：YYYY-MM
 
 // 从JSON文件加载排班数据
 async function loadBanData() {
     try {
-        const response = await fetch('pb.json');
+        // 获取当前年月
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const fileName = `static/pb_${year}_${month}.json`;
+        
+        const response = await fetch(fileName);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         ban = await response.json();
+        currentDataYearMonth = `${year}-${month}`; // 保存当前数据的年月
         
         // 数据加载完成后初始化页面
         fillSelectPeople();
@@ -103,12 +111,36 @@ function getPeoplePB(people) {
  * 根据日期查询排班
  * @param {string} date - 日期字符串 (YYYY-MM-DD)
  */
-function getDatePB(date) {
+async function getDatePB(date) {
     document.getElementById("bai-title").innerHTML = date + " 白班";
     document.getElementById("ye-title").innerHTML = date + " 夜班";
     
     const selectDay = new Date(date);
     const ind = selectDay.getDate() - 1;
+    
+    // 获取选择日期的年月
+    const year = selectDay.getFullYear();
+    const month = String(selectDay.getMonth() + 1).padStart(2, '0');
+    const selectedYearMonth = `${year}-${month}`;
+    const fileName = `static/pb_${year}_${month}.json`;
+    
+    // 检查是否需要加载新的数据文件
+    if (currentDataYearMonth !== selectedYearMonth) {
+        try {
+            const response = await fetch(fileName);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const newBan = await response.json();
+            ban = newBan; // 更新数据
+            currentDataYearMonth = selectedYearMonth; // 更新当前数据的年月
+            fillSelectPeople(); // 更新人员选择列表
+        } catch (error) {
+            console.error(`加载${fileName}失败:`, error);
+            resultDiv.innerHTML = `无法加载${year}年${month}月的排班数据，请稍后重试`;
+            return;
+        }
+    }
 
     let res_bai = date + " 白班：\n";
     let res_ye = "\n\n" + date + " 夜班：\n";
