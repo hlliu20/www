@@ -79,6 +79,11 @@ function getPeoplePB(people) {
     const schedule = ban[people];
     let result = `<h3>${people} 本月排班</h3><div class="schedule-grid">`;
     
+    // 统计工时
+    let totalHours = 0;
+    let workDays = 0;
+    let nightDays = 0;
+    
     for (let i = 0; i < schedule.length; i++) {
         const day = i + 1;
         const shift = schedule[i];
@@ -90,18 +95,33 @@ function getPeoplePB(people) {
         } else if (shift === 9 || shift === 11) {
             shiftText = '白班';
             shiftClass = 'shift-day';
+            workDays++;
         } else if (shift === 13) {
             shiftText = '夜班';
             shiftClass = 'shift-night';
+            workDays++;
+            nightDays++;
         } else {
             shiftText = `${shift}小时`;
             shiftClass = 'shift-special';
+            workDays++;
         }
-        
+        totalHours += shift;
         result += `<div class="schedule-item"><span class="day">${day}号</span><span class="shift ${shiftClass}">${shiftText}</span></div>`;
     }
     
     result += '</div>';
+    
+    // 添加工时统计
+    const workDaysFromHours = (totalHours / 8).toFixed(2);
+    result += `<div class="work-stats">
+        <div class="stat-item"><strong>本月总工时：</strong>${totalHours} 小时</div>
+        <div class="stat-item"><strong>工作天数：</strong>${workDays} 天</div>`;
+    if(nightDays !== 0){
+        result += `<div class="stat-item"><strong>夜班天数：</strong>${nightDays} 天</div>`;
+    }
+    result += `<div class="stat-item"><strong>折算天数：</strong>${workDaysFromHours} 天</div>
+    </div>`;
     
     // 将换行符替换为<br>标签以在HTML中正确显示
     resultDiv.innerHTML = result;
