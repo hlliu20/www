@@ -10,17 +10,44 @@
 <body>
     <div class="container">
         <div class="section">
-            <label for="personSelect">
-                按人员：
-                <select id="personSelect" aria-label="选择人员">
-                    <option value="">请选择</option>
-                </select>
-            </label>
+            <div class="two-column-layout">
+                <div class="column">
+                    <label for="personSelect">
+                        按人员：
+                        <select id="personSelect" aria-label="选择人员">
+                            <option value="">请选择</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="column">
+                    <label for="date">
+                        按日期：
+                        <input type="date" id="date" aria-label="选择日期">
+                    </label>
+                </div>
+            </div>
             <hr>
-            <label for="date">
-                按日期：
-                <input type="date" id="date" aria-label="选择日期">
-            </label>
+            <div id="compareSection">
+                <div class="two-column-layout">
+                    <div class="column">
+                        <label for="person1Select">
+                            比较人员1：
+                            <select id="person1Select" aria-label="选择人员1">
+                                <option value="">请选择</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="column">
+                        <label for="person2Select">
+                            比较人员2：
+                            <select id="person2Select" aria-label="选择人员2">
+                                <option value="">请选择</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+                <button id="compareBtn" disabled>比较</button>
+            </div>
         </div>
         <div class="section ban">
             <div class="grid-wrapper">

@@ -45,6 +45,9 @@ loadBanData();
 const personSelect = document.getElementById('personSelect');
 const dateInput = document.getElementById('date');
 const resultDiv = document.getElementById('result');
+const person1Select = document.getElementById('person1Select');
+const person2Select = document.getElementById('person2Select');
+const compareBtn = document.getElementById('compareBtn');
 
 // 事件监听器
 personSelect.addEventListener('change', (e) => {
@@ -58,6 +61,11 @@ dateInput.addEventListener('change', (e) => {
         getDatePB(e.target.value);
     }
 });
+
+// 比较排班事件监听器
+person1Select.addEventListener('change', checkCompareReady);
+person2Select.addEventListener('change', checkCompareReady);
+compareBtn.addEventListener('click', comparePeopleSchedule);
 
 // 页面加载完成后初始化
 document.addEventListener('DOMContentLoaded', () => {
@@ -199,13 +207,33 @@ function fillSelectPeople() {
     while (personSelect.children.length > 1) {
         personSelect.removeChild(personSelect.lastChild);
     }
+    
+    // 清空比较排班选项
+    while (person1Select.children.length > 1) {
+        person1Select.removeChild(person1Select.lastChild);
+    }
+    while (person2Select.children.length > 1) {
+        person2Select.removeChild(person2Select.lastChild);
+    }
 
     // 遍历排班数据的键，动态插入选项
     Object.keys(ban).forEach(name => {
+        // 为个人排班选择框添加选项
         const opt = document.createElement('option');
         opt.value = name;
         opt.textContent = name;
         personSelect.appendChild(opt);
+        
+        // 为比较排班选择框添加选项
+        const opt1 = document.createElement('option');
+        opt1.value = name;
+        opt1.textContent = name;
+        person1Select.appendChild(opt1);
+        
+        const opt2 = document.createElement('option');
+        opt2.value = name;
+        opt2.textContent = name;
+        person2Select.appendChild(opt2);
     });
 }
 
@@ -243,6 +271,123 @@ function fillKG(id, arr) {
             d.textContent = arr[i + 15] !== undefined ? arr[i + 15] : '';
         });
     }
+}
+
+/**
+ * 检查比较排班是否准备就绪
+ */
+function checkCompareReady() {
+    const person1 = person1Select.value;
+    const person2 = person2Select.value;
+    
+    // 只有当两个人员都选择了且不同时才启用比较按钮
+    if (person1 && person2 && person1 !== person2) {
+        compareBtn.disabled = false;
+    } else {
+        compareBtn.disabled = true;
+    }
+}
+
+/**
+ * 比较两个人的排班
+ */
+function comparePeopleSchedule() {
+    const person1 = person1Select.value;
+    const person2 = person2Select.value;
+    
+    if (!person1 || !person2 || !ban[person1] || !ban[person2]) return;
+    
+    const schedule1 = ban[person1];
+    const schedule2 = ban[person2];
+    
+    let result = `<h3>${person1} vs ${person2} 排班比较</h3>`;
+    result += '<div class="compare-table">';
+    
+    // 表头
+    result += '<div class="compare-row compare-header">';
+    result += '<div class="compare-cell">日期</div>';
+    result += `<div class="compare-cell">${person1}</div>`;
+    result += `<div class="compare-cell">${person2}</div>`;
+    result += '<div class="compare-cell">相同</div>';
+    result += '</div>';
+    
+    // 统计相同班次的天数
+    let sameShiftCount = 0;
+    
+    for (let i = 0; i < Math.max(schedule1.length, schedule2.length); i++) {
+        const day = i + 1;
+        const shift1 = schedule1[i] !== undefined ? schedule1[i] : -1;
+        const shift2 = schedule2[i] !== undefined ? schedule2[i] : -1;
+        
+        let shiftText1, shiftClass1;
+        let shiftText2, shiftClass2;
+        let isSame = false;
+        
+        // 处理人员1的班次
+        if (shift1 === -1) {
+            shiftText1 = '无数据';
+            shiftClass1 = 'shift-nodata';
+        } else if (shift1 === 0) {
+            shiftText1 = '休';
+            shiftClass1 = 'shift-off';
+        } else if (shift1 === 9 || shift1 === 11) {
+            shiftText1 = '白班';
+            shiftClass1 = 'shift-day';
+        } else if (shift1 === 13) {
+            shiftText1 = '夜班';
+            shiftClass1 = 'shift-night';
+        } else {
+            shiftText1 = `${shift1}小时`;
+            shiftClass1 = 'shift-special';
+        }
+        
+        // 处理人员2的班次
+        if (shift2 === -1) {
+            shiftText2 = '无数据';
+            shiftClass2 = 'shift-nodata';
+        } else if (shift2 === 0) {
+            shiftText2 = '休';
+            shiftClass2 = 'shift-off';
+        } else if (shift2 === 9 || shift2 === 11) {
+            shiftText2 = '白班';
+            shiftClass2 = 'shift-day';
+        } else if (shift2 === 13) {
+            shiftText2 = '夜班';
+            shiftClass2 = 'shift-night';
+        } else {
+            shiftText2 = `${shift2}小时`;
+            shiftClass2 = 'shift-special';
+        }
+        
+        // 检查是否相同班次
+        if (shift1 === shift2 && shift1 !== -1) {
+            isSame = true;
+            sameShiftCount++;
+        }
+        
+        const rowClass = isSame ? 'compare-row same-shift' : 'compare-row';
+        
+        result += `<div class="${rowClass}">`;
+        result += `<div class="compare-cell">${day}号</div>`;
+        result += `<div class="compare-cell shift ${shiftClass1}">${shiftText1}</div>`;
+        result += `<div class="compare-cell shift ${shiftClass2}">${shiftText2}</div>`;
+        result += `<div class="compare-cell">${isSame ? '✓' : ''}</div>`;
+        result += '</div>';
+    }
+    
+    result += '</div>';
+    
+    // 添加统计信息
+    const totalDays = Math.max(schedule1.length, schedule2.length);
+    const samePercentage = ((sameShiftCount / totalDays) * 100).toFixed(1);
+    
+    result += `<div class="compare-stats">
+        <div class="stat-item"><strong>相同班次天数：</strong>${sameShiftCount} 天</div>
+        <div class="stat-item"><strong>总天数：</strong>${totalDays} 天</div>
+        <div class="stat-item"><strong>相同比例：</strong>${samePercentage}%</div>
+    </div>`;
+    
+    resultDiv.innerHTML = result;
 }
 
 /**
