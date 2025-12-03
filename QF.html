@@ -1,0 +1,21 @@
+<?php require __DIR__ . '/log.php'; ?>
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>欠发处理</title>
+    <link rel="stylesheet" type="text/css" href="css/QF.css">
+    <script src="js/xlsx.full.min.js" defer></script>
+    <script src="js/QF.js" defer></script>
+</head>
+<body>
+    <div class="section">
+        <input type="file" id="fileInput" accept=".xls,.xlsx" />
+    </div>
+    <div class="section" id="tableContainer"></div>
+    <div class="section">
+        <div id="result"></div>
+    </div>
+</body>
+</html>
