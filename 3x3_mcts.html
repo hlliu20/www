@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>3x3 井字棋（ONNX + MCTS AI）</title>
+  <style>
+    body { font-family: Arial, sans-serif; display:flex; flex-direction:column; align-items:center; padding:20px }
+    #board { display:grid; grid-template-columns:repeat(3, 80px); grid-gap:8px; }
+    .cell { width:80px; height:80px; background:#f0f0f0; display:flex; align-items:center; justify-content:center; font-size:40px; cursor:pointer }
+    .cell.disabled { pointer-events: none; opacity:0.6 }
+    #status { margin-top:12px }
+    .controls { margin-top:8px }
+    button { margin-left:8px }
+  </style>
+</head>
+<body>
+  <h2>3x3 井字棋（ONNX + MCTS AI）</h2>
+  <div id="board"></div>
+  <div id="status">加载模型中……</div>
+  <div class="controls">
+    <label>Playouts: <input id="nplay" type="number" value="200" min="1" style="width:80px"></label>
+    <button id="resetBtn">重置</button>
+  </div>
+
+  <!-- onnxruntime-web CDN -->
+  <script src="js/ort.min.js"></script>
+  <script>
+  // 模型文件路径（相对于本 HTML）：
+  const MODEL_URL = 'models_333/best_policy.onnx';
+
+  const width = 3, height = 3, n_in_row = 3;
+  let states = {}; // move->player
+  let availables = [...Array(width*height).keys()];
+  let current_player = 1; // human starts
+  let last_move = -1;
+  let session = null;
+
+  const boardEl = document.getElementById('board');
+  const statusEl = document.getElementById('status');
+  const resetBtn = document.getElementById('resetBtn');
+  const nplayEl = document.getElementById('nplay');
+
+  function createBoard(){
+    boardEl.innerHTML = '';
+    for(let i=0;i<width*height;i++){
+      const c = document.createElement('div');
+      c.className = 'cell';
+      c.id = 'cell-'+i;
+      c.addEventListener('click', ()=>onCellClick(i));
+      boardEl.appendChild(c);
+    }
+  }
+
+  function onCellClick(i){
+    if(!(i in states) && current_player===1){
+      doMove(i, 1);
+      if(checkEnd()) return;
+      // AI move via MCTS
+      current_player = 2;
+      statusEl.textContent = 'AI 思考中...';
+      runMCTSThenAIMove();
+    }
+  }
+
+  function doMove(move, player){
+    states[move] = player;
+    availables = availables.filter(x=>x!==move);
+    last_move = move;
+    const el = document.getElementById('cell-'+move);
+    el.textContent = (player===1)?'X':'O';
+    el.classList.add('disabled');
+  }
+
+  function reset(){
+    states = {};
+    availables = [...Array(width*height).keys()];
+    current_player = 1;
+    last_move = -1;
+    statusEl.textContent = '你的回合 (X)';
+    createBoard();
+  }
+
+  function checkEnd(){
+    const lines = [
+      [0,1,2],[3,4,5],[6,7,8],
+      [0,3,6],[1,4,7],[2,5,8],
+      [0,4,8],[2,4,6]
+    ];
+    for(const line of lines){
+      const a = states[line[0]]; if(!a) continue;
+      if(states[line[1]]===a && states[line[2]]===a){
+        statusEl.textContent = (a===1)?'你赢了！':'AI 赢了！';
+        disableAll();
+        return true;
+      }
+    }
+    if(availables.length===0){
+      statusEl.textContent = '平局';
+      return true;
+    }
+    return false;
+  }
+
+  function disableAll(){
+    for(let i=0;i<width*height;i++){
+      document.getElementById('cell-'+i).classList.add('disabled');
+    }
+  }
+
+  // Build input matching repo's `Board.current_state()` layout and flipping
+  function buildModelInput_fromStates(forPlayer, boardStates, lastMove){
+    const square = new Float32Array(4*width*height).fill(0);
+    for(const [moveStr, player] of Object.entries(boardStates)){
+      const m = parseInt(moveStr);
+      const h = Math.floor(m/width);
+      const w = m % width;
+      const ch = (player===forPlayer)?0:1;
+      const idx = ch*width*height + h*height + w;
+      square[idx] = 1.0;
+    }
+    if(lastMove>=0){
+      const h = Math.floor(lastMove/width);
+      const w = lastMove % width;
+      const idx = 2*width*height + h*height + w;
+      square[idx] = 1.0;
+    }
+    const turnFlag = (Object.keys(boardStates).length % 2 === 0)?1.0:0.0;
+    for(let i=0;i<width*height;i++) square[3*width*height + i] = turnFlag;
+
+    // flip vertically like repo: [:, ::-1, :]
+    const flipped = new Float32Array(4*width*height);
+    for(let ch=0; ch<4; ch++){
+      for(let row=0; row<height; row++){
+        const dstRow = (height-1-row);
+        for(let col=0; col<width; col++){
+          const srcIdx = ch*width*height + row*height + col;
+          const dstIdx = ch*width*height + dstRow*height + col;
+          flipped[dstIdx] = square[srcIdx];
+        }
+      }
+    }
+    return {data: flipped, dims: [1,4,width,height]};
+  }
+
+  // Check terminal and winner programmatically
+  function gameEndFromStates(boardStates){
+    const lines = [
+      [0,1,2],[3,4,5],[6,7,8],
+      [0,3,6],[1,4,7],[2,5,8],
+      [0,4,8],[2,4,6]
+    ];
+    for(const line of lines){
+      const a = boardStates[line[0]]; if(!a) continue;
+      if(boardStates[line[1]]===a && boardStates[line[2]]===a){
+        return {end:true, winner:a};
+      }
+    }
+    if(Object.keys(boardStates).length === width*height) return {end:true, winner:-1};
+    return {end:false, winner:-1};
+  }
+
+  // ----- MCTS implementation (AlphaZero-style, uses network for policy+value) -----
+  class MCTSNode{
+    constructor(parent, prior){
+      this.parent = parent;
+      this.children = new Map(); // action -> node
+      this.n_visits = 0;
+      this.Q = 0;
+      this.P = prior || 0;
+    }
+
+    isLeaf(){ return this.children.size === 0; }
+
+    expand(action_priors){
+      for(const [a,p] of action_priors){
+        if(!this.children.has(a)){
+          this.children.set(a, new MCTSNode(this, p));
+        }
+      }
+    }
+
+    update(leaf_value){
+      this.n_visits += 1;
+      this.Q += (leaf_value - this.Q) / this.n_visits;
+    }
+
+    updateRecursive(leaf_value){
+      if(this.parent){
+        this.parent.updateRecursive(-leaf_value);
+      }
+      this.update(leaf_value);
+    }
+
+    getValue(c_puct){
+      const u = c_puct * this.P * Math.sqrt((this.parent?this.parent.n_visits:1)) / (1 + this.n_visits);
+      return this.Q + u;
+    }
+  }
+
+  class MCTS{
+    constructor(policySession, c_puct=5, n_playout=200){
+      this.root = new MCTSNode(null, 1.0);
+      this.policySession = policySession; // onnx session
+      this.c_puct = c_puct;
+      this.n_playout = n_playout;
+    }
+
+    async _playout(state){
+      let node = this.root;
+      let curState = JSON.parse(JSON.stringify(state)); // shallow deepcopy of object with plain types
+
+      // selection
+      while(true){
+        if(node.isLeaf()) break;
+        // select child with max value
+        let bestA = null, bestNode = null, bestVal = -Infinity;
+        for(const [a,child] of node.children.entries()){
+          const val = child.getValue(this.c_puct);
+          if(val > bestVal){ bestVal = val; bestA = a; bestNode = child; }
+        }
+        // play action
+        curState.states[bestA] = curState.player;
+        curState.availables = curState.availables.filter(x=>x!==bestA);
+        curState.last_move = bestA;
+        curState.player = (curState.player===1)?2:1;
+        node = bestNode;
+        // check end
+        const ge = gameEndFromStates(curState.states);
+        if(ge.end) break;
+      }
+
+      // evaluate leaf
+      const ge2 = gameEndFromStates(curState.states);
+      let leaf_value = 0.0;
+      if(ge2.end){
+        if(ge2.winner === -1) leaf_value = 0.0;
+        else leaf_value = (ge2.winner === curState.player)?1.0:-1.0;
+      }else{
+        // call policy/value network
+        const inp = buildModelInput_fromStates(curState.player, curState.states, curState.last_move);
+        const tensor = new ort.Tensor('float32', inp.data, inp.dims);
+        const outputs = await this.policySession.run({ 'state_input': tensor });
+        const log_probs = outputs.log_act_probs.data; // Float32Array
+        const probs = Array.from(log_probs).map(Math.exp);
+        // convert into action_priors array only for legal moves
+        const action_priors = curState.availables.map(a=>[a, probs[a]]);
+        // normalize priors to sum 1 (avoid zero-sum issues)
+        const s = action_priors.reduce((acc,ap)=>acc+ap[1],0) || 1.0;
+        for(const ap of action_priors) ap[1] = ap[1]/s;
+        // expand node
+        node.expand(action_priors);
+        // value from network: note network value is from current player's perspective in repo
+        leaf_value = outputs.value.data[0];
+      }
+
+      // backpropagate: value should be from the viewpoint of the node's parent current player
+      node.updateRecursive(-leaf_value);
+    }
+
+    async getAction(state, temp=1e-3){
+      // state: {states:..., availables:..., player:..., last_move:...}
+      this.root = new MCTSNode(null, 1.0);
+      // run playouts
+      for(let i=0;i<this.n_playout;i++){
+        // clone minimal board representation
+        const st = { states: JSON.parse(JSON.stringify(state.states)), availables: state.availables.slice(), player: state.player, last_move: state.last_move };
+        await this._playout(st);
+      }
+
+      // select move with most visits
+      let bestA = null, bestN = -1;
+      for(const [a, child] of this.root.children.entries()){
+        if(child.n_visits > bestN){ bestN = child.n_visits; bestA = a; }
+      }
+      return bestA;
+    }
+  }
+
+  async function runMCTSThenAIMove(){
+    if(!session){ statusEl.textContent = '模型未准备好'; return; }
+    const nplay = Math.max(1, parseInt(nplayEl.value)||200);
+    const tree = new MCTS(session, 5, nplay);
+    const state = { states: JSON.parse(JSON.stringify(states)), availables: availables.slice(), player: 2, last_move: last_move };
+    try{
+      const move = await tree.getAction(state, 1e-3);
+      if(move===null || move===undefined){ statusEl.textContent='AI 未选中动作'; return; }
+      doMove(move, 2);
+      if(checkEnd()) return;
+      current_player = 1;
+      statusEl.textContent = '你的回合 (X)';
+    }catch(err){
+      console.error(err);
+      statusEl.textContent = 'MCTS 错误：'+err;
+    }
+  }
+
+  async function init(){
+    createBoard();
+    reset();
+    statusEl.textContent = '加载 ONNX 模型...';
+    try{
+      session = await ort.InferenceSession.create(MODEL_URL);
+      statusEl.textContent = '模型已加载。你的回合 (X)';
+    }catch(e){
+      console.error(e);
+      statusEl.textContent = '加载模型失败，请确保通过 HTTP(S) 提供文件并且模型路径正确。\n错误: '+e;
+    }
+  }
+
+  resetBtn.addEventListener('click', reset);
+  init();
+  </script>
+</body>
+</html>
