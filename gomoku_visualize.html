@@ -171,11 +171,11 @@ function parseMoves(input) {
   for (const token of normalized) {
     let move = null;
     
-    // 1. 尝试纯数字格式：row*HEIGHT + col（如 112）
+    // 1. 尝试纯数字格式：row*WIDTH + col（如 112）
     if (/^\d+$/.test(token)) {
       const num = parseInt(token);
-      const row = Math.floor(num / HEIGHT);
-      const col = num % HEIGHT;
+      const row = Math.floor(num / WIDTH);
+      const col = num % WIDTH;
       if (row >= 0 && row < HEIGHT && col >= 0 && col < WIDTH) {
         move = row * WIDTH + col;
       }
