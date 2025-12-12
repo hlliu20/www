@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie查看器</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Cookie查看器</h1>
+        
+        <div class="button-group">
+            <button id="refreshBtn" class="btn btn-primary">刷新</button>
+            <button id="clearAllBtn" class="btn btn-danger">清空所有Cookie</button>
+        </div>
+        
+        <div class="results-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Cookie名称</th>
+                        <th>Cookie值</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="cookiesBody">
+                    <!-- Cookie列表将通过JavaScript动态生成 -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- 底部导航按钮 -->
+        <div class="bottom-nav">
+            <button class="btn" onclick="location.href='cw_home.html'">返回首页</button>
+            <button class="btn" onclick="location.href='cw_result.html'">查看结果</button>
+            <button class="btn" onclick="location.href='cw_manager_milk.html'">管理品项</button>
+            <button class="btn" onclick="exportData()">导出</button>
+            <button class="btn" onclick="importData()">导入</button>
+            <button class="btn btn-danger" onclick="clearInventoryRecords()">清空记录</button>
+        </div>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCookies();
+            
+            // 刷新按钮
+            document.getElementById('refreshBtn').addEventListener('click', loadCookies);
+            
+            // 清空所有Cookie按钮
+            document.getElementById('clearAllBtn').addEventListener('click', function() {
+                if (confirm('确定要清空所有Cookie吗？此操作不可恢复！')) {
+                    clearAllCookies();
+                }
+            });
+        });
+        
+        // 加载并显示所有Cookie
+        function loadCookies() {
+            const cookiesBody = document.getElementById('cookiesBody');
+            cookiesBody.innerHTML = '';
+            
+            if (!document.cookie) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td colspan="3" style="text-align: center;">暂无Cookie数据</td>
+                `;
+                cookiesBody.appendChild(row);
+                return;
+            }
+            
+            const cookies = document.cookie.split(';');
+            
+            for (let i = 0; i < cookies.length; i++) {
+                let cookie = cookies[i].trim();
+                if (cookie) {
+                    const [name, value] = cookie.split('=');
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${name}</td>
+                        <td style="word-break: break-all;">${decodeURIComponent(value)}</td>
+                        <td>
+                            <button class="btn btn-danger delete-btn" onclick="deleteCookie('${name}')">删除</button>
+                        </td>
+                    `;
+                    cookiesBody.appendChild(row);
+                }
+            }
+        }
+        
+        // 删除单个Cookie
+        function deleteCookie(name) {
+            if (confirm(`确定要删除Cookie "${name}" 吗？`)) {
+                document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/';
+                loadCookies();
+                alert('Cookie已删除');
+            }
+        }
+        
+        // 清空所有Cookie
+        function clearAllCookies() {
+            const cookies = document.cookie.split(';');
+            
+            for (let i = 0; i < cookies.length; i++) {
+                let cookie = cookies[i].trim();
+                if (cookie) {
+                    const name = cookie.split('=')[0];
+                    document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/';
+                }
+            }
+            
+            loadCookies();
+            alert('所有Cookie已清空');
+        }
+    </script>
+</body>
+</html>

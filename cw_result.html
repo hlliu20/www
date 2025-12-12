@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>库存结果</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>库存结果</h1>
+        
+        <div class="results-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>品项</th>
+                        <th>日期</th>
+                        <th>总数</th>
+                    </tr>
+                </thead>
+                <tbody id="resultsBody">
+                    <!-- 结果将通过JavaScript动态生成 -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- 展开详情容器 -->
+        <div id="detailContainer" class="detail-container" style="display: none;">
+            <div class="detail-header">
+                <h3 id="detailTitle"></h3>
+                <button id="closeDetail" class="btn">收起</button>
+            </div>
+            <div class="detail-controls">
+                <button id="editAllBtn" class="btn btn-primary">编辑</button>
+                <button id="saveAllBtn" class="btn btn-primary" style="display: none;">保存</button>
+                <button id="cancelEditBtn" class="btn" style="display: none;">取消</button>
+            </div>
+            <div id="detailContent" class="detail-content">
+                <!-- 详情内容将通过JavaScript动态生成 -->
+            </div>
+        </div>
+        
+        <!-- 底部导航按钮 -->
+        <div class="bottom-nav">
+            <button class="btn" onclick="location.href='cw_home.html'">返回首页</button>
+            <button class="btn" onclick="location.href='cw_manager_milk.html'">管理品项</button>
+            <button class="btn" onclick="exportData()">导出</button>
+            <button class="btn" onclick="importData()">导入</button>
+            <button class="btn btn-danger" onclick="clearInventoryRecords()">清空记录</button>
+        </div>
+    </div>
+    <script src="js/common.js"></script>
+    <script src="js/result.js"></script>
+</body>
+</html>

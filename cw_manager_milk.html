@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>牛奶品项管理</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>牛奶品项管理</h1>
+        
+        <div class="button-group">
+            <input type="text" id="quickAddItem" placeholder="输入品项名称">
+            <button id="addNewItem" class="btn btn-primary">新建品项</button>
+        </div>
+        
+        <div id="itemsList" class="items-list">
+            <!-- 品项列表将通过JavaScript动态生成 -->
+        </div>
+        
+        <!-- 底部导航按钮 -->
+        <div class="bottom-nav">
+            <button class="btn" onclick="location.href='cw_home.html'">返回首页</button>
+            <button class="btn" onclick="location.href='cw_result.html'">查看结果</button>
+            <button class="btn" onclick="exportData()">导出</button>
+            <button class="btn" onclick="importData()">导入</button>
+            <button class="btn btn-danger" onclick="clearInventoryRecords()">清空记录</button>
+        </div>
+    </div>
+
+    <!-- 新建品项模态框 -->
+    <div id="addItemModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>新建品项</h2>
+            <input type="text" id="newItemName" placeholder="输入品项名称">
+            <button id="saveNewItem" class="btn btn-primary">保存</button>
+        </div>
+    </div>
+    <script src="js/common.js"></script>
+    <script src="js/manager.js"></script>
+</body>
+</html>

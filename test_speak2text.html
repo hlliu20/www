@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>语音转文字</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .speech-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        .mic-button {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: #3498db;
+            border: none;
+            color: white;
+            font-size: 48px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .mic-button:hover {
+            background: #2980b9;
+            transform: scale(1.05);
+        }
+        
+        .mic-button.recording {
+            background: #e74c3c;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+            }
+            50% {
+                box-shadow: 0 4px 25px rgba(231, 76, 60, 0.6);
+            }
+            100% {
+                box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+            }
+        }
+        
+        .status-text {
+            font-size: 18px;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+            min-height: 25px;
+        }
+        
+        .result-text {
+            width: 90%;
+            max-width: 600px;
+            min-height: 200px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            font-size: 16px;
+            line-height: 1.6;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            white-space: pre-wrap;
+            overflow-y: auto;
+        }
+        
+        .clear-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #95a5a6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+        
+        .clear-button:hover {
+            background: #7f8c8d;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>语音转文字</h1>
+        
+        <div class="speech-container">
+            <button id="micButton" class="mic-button">
+                🎤
+            </button>
+            
+            <div id="statusText" class="status-text">点击麦克风开始录音</div>
+            
+            <div id="resultText" class="result-text"></div>
+            
+            <button id="clearButton" class="clear-button">清空文本</button>
+            
+            <div id="errorMessage" class="error-message"></div>
+        </div>
+        
+        <!-- 底部导航按钮 -->
+        <div class="bottom-nav">
+            <button class="btn" onclick="location.href='cw_home.html'">返回首页</button>
+            <button class="btn" onclick="location.href='cw_result.html'">查看结果</button>
+            <button class="btn" onclick="location.href='cw_manager_milk.html'">管理品项</button>
+            <button class="btn" onclick="location.href='cookie.html'">Cookie管理</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const micButton = document.getElementById('micButton');
+            const statusText = document.getElementById('statusText');
+            const resultText = document.getElementById('resultText');
+            const clearButton = document.getElementById('clearButton');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            let recognition = null;
+            let isRecording = false;
+            
+            // 检查浏览器是否支持语音识别
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                
+                // 配置语音识别
+                recognition.continuous = true;  // 持续识别
+                recognition.interimResults = true;  // 显示中间结果
+                recognition.lang = 'zh-CN';  // 中文识别
+                
+                // 监听识别结果
+                recognition.onresult = function(event) {
+                    let interimTranscript = '';
+                    let finalTranscript = '';
+                    
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        const transcript = event.results[i][0].transcript;
+                        if (event.results[i].isFinal) {
+                            finalTranscript += transcript;
+                        } else {
+                            interimTranscript += transcript;
+                        }
+                    }
+                    
+                    if (finalTranscript) {
+                        resultText.textContent += finalTranscript;
+                    }
+                    
+                    if (interimTranscript) {
+                        statusText.textContent = '正在识别: ' + interimTranscript;
+                    }
+                };
+                
+                // 监听错误
+                recognition.onerror = function(event) {
+                    console.error('语音识别错误:', event.error);
+                    let errorMsg = '识别出错: ';
+                    
+                    switch(event.error) {
+                        case 'no-speech':
+                            errorMsg += '没有检测到语音';
+                            break;
+                        case 'audio-capture':
+                            errorMsg += '无法访问麦克风';
+                            break;
+                        case 'not-allowed':
+                            errorMsg += '麦克风权限被拒绝';
+                            break;
+                        case 'network':
+                            errorMsg += '网络错误';
+                            break;
+                        default:
+                            errorMsg += event.error;
+                    }
+                    
+                    errorMessage.textContent = errorMsg;
+                    stopRecording();
+                };
+                
+                // 监听识别结束
+                recognition.onend = function() {
+                    if (isRecording) {
+                        // 如果还在录音状态，重新开始识别
+                        recognition.start();
+                    } else {
+                        stopRecording();
+                    }
+                };
+                
+            } else {
+                errorMessage.textContent = '您的浏览器不支持语音识别功能';
+                micButton.disabled = true;
+                micButton.style.opacity = '0.5';
+            }
+            
+            // 麦克风按钮点击事件
+            micButton.addEventListener('click', function() {
+                if (!recognition) {
+                    return;
+                }
+                
+                if (isRecording) {
+                    stopRecording();
+                } else {
+                    startRecording();
+                }
+            });
+            
+            // 清空按钮点击事件
+            clearButton.addEventListener('click', function() {
+                resultText.textContent = '';
+                errorMessage.textContent = '';
+                statusText.textContent = '点击麦克风开始录音';
+            });
+            
+            // 开始录音
+            function startRecording() {
+                isRecording = true;
+                micButton.classList.add('recording');
+                statusText.textContent = '正在录音...';
+                errorMessage.textContent = '';
+                
+                try {
+                    recognition.start();
+                } catch (error) {
+                    console.error('启动语音识别失败:', error);
+                    errorMessage.textContent = '启动语音识别失败';
+                    stopRecording();
+                }
+            }
+            
+            // 停止录音
+            function stopRecording() {
+                isRecording = false;
+                micButton.classList.remove('recording');
+                statusText.textContent = '点击麦克风开始录音';
+                
+                if (recognition) {
+                    try {
+                        recognition.stop();
+                    } catch (error) {
+                        console.error('停止语音识别失败:', error);
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

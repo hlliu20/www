@@ -1,0 +1,480 @@
+/* 基础样式重置 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 100%;
+    padding: 20px 15px;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 25px;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+/* 按钮样式 */
+.btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    min-width: 80px;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+}
+
+.btn-danger {
+    background-color: #e74c3c;
+    color: white;
+    padding: 8px 15px;
+    font-size: 14px;
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+}
+
+/* 表单样式 */
+.input-form {
+    background: white;
+    padding: 25px 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    flex: 1;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+/* 品项列表样式 */
+.items-list {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    margin-bottom: 20px;
+    flex: 1;
+}
+
+.item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.item-row:last-child {
+    border-bottom: none;
+}
+
+.item-info {
+    flex: 1;
+    font-size: 16px;
+}
+
+/* 按钮组样式 */
+.button-group {
+    text-align: center;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.btn.recording {
+    background-color: #e74c3c;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+    }
+    50% {
+        box-shadow: 0 4px 25px rgba(231, 76, 60, 0.6);
+    }
+    100% {
+        box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+    }
+}
+
+.button-group input {
+    flex: 1;
+    max-width: 200px;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+.button-group input:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+/* 底部导航 */
+.bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    padding: 15px 0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    margin-top: auto;
+    flex-wrap: wrap;
+}
+
+.bottom-nav .btn {
+    flex: 1;
+    min-width: 70px;
+    max-width: 100px;
+    margin: 0 5px;
+    font-size: 14px;
+    padding: 10px 8px;
+}
+
+/* 结果表格样式 */
+.results-table {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 20px;
+    flex: 1;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 15px 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 16px;
+}
+
+td {
+    font-size: 15px;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+/* 模态框样式 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 15% auto;
+    padding: 25px 20px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.close {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #aaa;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #000;
+}
+
+.modal h2 {
+    margin-bottom: 20px;
+    color: #2c3e50;
+    font-size: 20px;
+}
+
+.modal input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+    .container {
+        padding: 15px 10px;
+    }
+    
+    h1 {
+        font-size: 22px;
+        margin-bottom: 20px;
+    }
+    
+    .input-form,
+    .items-list,
+    .results-table,
+    .modal-content {
+        padding: 20px 15px;
+    }
+    
+    .bottom-nav .btn {
+        font-size: 13px;
+        padding: 9px 6px;
+        min-width: 65px;
+    }
+    
+    th, td {
+        padding: 12px 8px;
+        font-size: 14px;
+    }
+    
+    th {
+        font-size: 15px;
+    }
+}
+
+/* 详情容器样式 */
+.detail-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.detail-header h3 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 18px;
+}
+
+.detail-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.detail-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.detail-content .position-item {
+    flex: 0 0 calc(25% - 15px);
+    max-width: calc(25% - 15px);
+}
+
+.position-item {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 2px;
+    min-width: 80px;
+    text-align: center;
+    border: 1px solid #e9ecef;
+}
+
+.position-name {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 2px;
+    font-size: 12px;
+}
+
+.position-quantity {
+    font-size: 14px;
+    color: #3498db;
+    margin-bottom: 2px;
+}
+
+.edit-input {
+    width: 60px;
+    padding: 2px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.add-position-item {
+    background: #e8f5e8;
+    border: 2px dashed #28a745;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.add-position-item:hover {
+    background: #d4edda;
+    border-color: #218838;
+}
+
+.add-icon {
+    font-size: 24px;
+    color: #28a745;
+    margin-bottom: 5px;
+}
+
+.add-text {
+    font-size: 12px;
+    color: #28a745;
+}
+
+.new-position-input {
+    width: 100%;
+    padding: 6px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+/* 确保在小屏幕上表格可滚动 */
+@media (max-width: 360px) {
+    .results-table {
+        overflow-x: auto;
+    }
+    
+    table {
+        min-width: 300px;
+    }
+    
+    .detail-content {
+        gap: 2px;
+    }
+    
+    .detail-content .position-item {
+        flex: 0 0 calc(25% - 1.5px);
+        max-width: calc(25% - 1.5px);
+        min-width: 70px;
+        padding: 2px;
+    }
+    
+    .position-name {
+        font-size: 11px;
+        margin-bottom: 2px;
+    }
+    
+    .position-quantity {
+        font-size: 12px;
+        margin-bottom: 2px;
+    }
+    
+    .edit-input {
+        width: 50px;
+        padding: 2px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 768px) {
+    .detail-content .position-item {
+        flex: 0 0 calc(25% - 8px);
+        max-width: calc(25% - 8px);
+    }
+}
