@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>别踩白块 - 豆包</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body, html {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            transition: background-color 0.3s ease;
+        }
+        /* 白天模式默认样式 */
+        body {
+            background-color: #f5f5f5;
+        }
+        #game-container {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+            background-color: #fff;
+            transition: background-color 0.3s ease;
+        }
+        .row {
+            width: 100%;
+            height: 25%;
+            display: flex;
+            position: absolute;
+            left: 0;
+            transform: translateZ(0);
+            will-change: top;
+            transition: none;
+        }
+        .row.fast-move {
+            transition: top 0.01s linear;
+            filter: blur(0.6px);
+        }
+        .block {
+            width: 25%;
+            height: 100%;
+            border: 1px solid #ccc;
+            transition: border-color 0.3s ease;
+        }
+        .black {
+            background-color: #000;
+        }
+        .correct {
+            background-color: #00ff00;
+        }
+        .error {
+            background-color: #ff3333;
+        }
+        /* 信息面板：左上角垂直排列 + 小字体 */
+        .info-group {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 100;
+        }
+        .info-panel {
+            font-size: 14px;
+            font-weight: bold;
+            padding: 2px 4px;
+            background-color: transparent;
+            color: #666;
+            white-space: nowrap;
+            transition: color 0.3s ease;
+        }
+        /* 设置按钮样式 */
+        #settings-btn {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        /* 弹窗遮罩 */
+        .modal-mask {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 300;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        /* 弹窗内容 */
+        .modal-content {
+            width: 280px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .modal-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        /* 开关样式 */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #4CAF50;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        .modal-close {
+            width: 100%;
+            padding: 8px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        /* 开始按钮样式 */
+        #start-btn {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 15px 40px;
+            font-size: 24px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            z-index: 200;
+        }
+        #start-btn:hover {
+            background-color: #45a049;
+        }
+
+        /* ---------------- 黑夜模式样式 ---------------- */
+        body.dark-mode {
+            background-color: #1a1a1a;
+        }
+        body.dark-mode #game-container {
+            background-color: #2d2d2d;
+        }
+        body.dark-mode .block {
+            border-color: #555;
+        }
+        body.dark-mode .black {
+            background-color: #000;
+        }
+        body.dark-mode .correct {
+            background-color: #00cc00;
+        }
+        body.dark-mode .error {
+            background-color: #cc0000;
+        }
+        body.dark-mode .info-panel {
+            color: #ddd;
+        }
+        body.dark-mode .modal-content {
+            background-color: #333;
+            color: #ddd;
+        }
+    </style>
+</head>
+<body>
+    <!-- 信息面板：左上角垂直分组 -->
+    <div class="info-group">
+        <div class="info-panel" id="current-score">得分: 0</div>
+        <div class="info-panel" id="current-speed">速度: 2.0</div>
+        <div class="info-panel" id="highest-score">最高分: 0</div>
+    </div>
+
+    <button id="settings-btn">⚙️</button>
+    <button id="start-btn">开始游戏</button>
+    <div id="game-container"></div>
+
+    <!-- 设置弹窗 -->
+    <div class="modal-mask" id="settings-modal">
+        <div class="modal-content">
+            <div class="modal-title">游戏设置</div>
+            <div class="setting-item">
+                <span>允许黑块同列连续出现</span>
+                <label class="switch">
+                    <input type="checkbox" id="allow-same-col" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <!-- 新增黑夜模式开关 -->
+            <div class="setting-item">
+                <span>黑夜模式</span>
+                <label class="switch">
+                    <input type="checkbox" id="dark-mode-switch">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <button class="modal-close" id="modal-close-btn">确定</button>
+        </div>
+    </div>
+
+    <script>
+        const gameContainer = document.getElementById('game-container');
+        const currentScoreElement = document.getElementById('current-score');
+        const currentSpeedElement = document.getElementById('current-speed');
+        const highestScoreElement = document.getElementById('highest-score');
+        const startBtn = document.getElementById('start-btn');
+        const settingsBtn = document.getElementById('settings-btn');
+        const settingsModal = document.getElementById('settings-modal');
+        const modalCloseBtn = document.getElementById('modal-close-btn');
+        const allowSameColSwitch = document.getElementById('allow-same-col');
+        const darkModeSwitch = document.getElementById('dark-mode-switch');
+        
+        let score = 0;
+        let highestScore = 0;
+        let isPlaying = false;
+        let fallSpeed = 2.0;
+        const maxSpeed = 30;
+        const rowHeightPercent = 25;
+        let lastTwoBlackCols = [-1, -1];
+        let allowSameCol = true;
+        // 黑夜模式状态：默认关闭
+        let isDarkMode = false;
+        const COOKIE_NAME = 'avoidWhiteHighestScore';
+        const COOKIE_EXPIRE_DAYS = 30;
+        let animationFrameId = null;
+        const MAX_ROWS = 6;
+        let speedStep = 0;
+
+        // Cookie 操作函数
+        function getCookie(name) {
+            const cookies = document.cookie.split('; ');
+            for (const cookie of cookies) {
+                const [cookieName, cookieValue] = cookie.split('=');
+                if (cookieName === name) return parseInt(cookieValue);
+            }
+            return null;
+        }
+
+        function setCookie(name, value, days) {
+            const date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            const expires = "expires=" + date.toUTCString();
+            document.cookie = `${name}=${value}; ${expires}; path=/`;
+        }
+
+        // 初始化最高分
+        function initHighestScore() {
+            const savedScore = getCookie(COOKIE_NAME);
+            highestScore = savedScore !== null ? savedScore : 0;
+            setCookie(COOKIE_NAME, highestScore, COOKIE_EXPIRE_DAYS);
+            highestScoreElement.textContent = `最高分: ${highestScore}`;
+        }
+
+        // 切换黑夜模式函数
+        function toggleDarkMode(enable) {
+            isDarkMode = enable;
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
+        }
+
+        // 创建行：根据设置判断是否允许同列连续
+        function createRow(top) {
+            const row = document.createElement('div');
+            row.className = 'row';
+            row.style.top = `${top}%`;
+            let blackIndex;
+            
+            if (allowSameCol) {
+                // 允许连续：最多连续2个
+                do {
+                    blackIndex = Math.floor(Math.random() * 4);
+                } while (lastTwoBlackCols[0] === blackIndex && lastTwoBlackCols[1] === blackIndex);
+            } else {
+                // 不允许连续：和上一个黑块列不同
+                do {
+                    blackIndex = Math.floor(Math.random() * 4);
+                } while (blackIndex === lastTwoBlackCols[lastTwoBlackCols.length - 1]);
+            }
+
+            lastTwoBlackCols.push(blackIndex);
+            if (lastTwoBlackCols.length > 2) {
+                lastTwoBlackCols.shift();
+            }
+
+            for (let i = 0; i < 4; i++) {
+                const block = document.createElement('div');
+                block.className = 'block';
+                if (i === blackIndex) block.classList.add('black');
+                block.addEventListener('click', (e) => handleBlockClick(e, block, row));
+                block.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    handleBlockClick(e, block, row);
+                });
+                row.appendChild(block);
+            }
+            return row;
+        }
+
+        // 处理点击
+        function handleBlockClick(e, block, row) {
+            if (!isPlaying) return;
+            if (block.classList.contains('black')) {
+                block.classList.remove('black');
+                block.classList.add('correct');
+                block.removeEventListener('click', arguments.callee);
+                block.removeEventListener('touchstart', arguments.callee);
+                
+                score++;
+                currentScoreElement.textContent = `得分: ${score}`;
+                
+                // 分段提速逻辑
+                let speedAdd = 0;
+                if (score <= 60) speedAdd = 0.1;
+                else if (score <= 100) speedAdd = 0.05;
+                else speedAdd = 0.025;
+
+                if (fallSpeed < 18) {
+                    fallSpeed += speedAdd;
+                    currentSpeedElement.textContent = `速度: ${fallSpeed.toFixed(1)}`;
+                } else {
+                    speedStep += speedAdd;
+                    const showSpeed = (fallSpeed + speedStep).toFixed(1);
+                    currentSpeedElement.textContent = `速度: ${showSpeed}`;
+                }
+
+                if (fallSpeed + speedStep >= 18) {
+                    row.classList.add('fast-move');
+                    document.querySelectorAll('.row:not(.fast-move)').forEach(r => r.classList.add('fast-move'));
+                }
+            } else {
+                block.classList.add('error');
+                gameOver();
+            }
+        }
+
+        // 游戏循环
+        function gameLoop() {
+            if (!isPlaying) return;
+            const moveFactor = fallSpeed + speedStep >= 18 ? 0.05 : 0.1;
+            const moveStep = (fallSpeed + speedStep) * moveFactor;
+
+            const rows = document.querySelectorAll('.row');
+            rows.forEach(row => {
+                let currentTop = parseFloat(row.style.top);
+                currentTop += moveStep;
+                row.style.top = `${currentTop}%`;
+
+                if (currentTop > 100) {
+                    const blackBlock = row.querySelector('.black');
+                    if (blackBlock) {
+                        blackBlock.classList.add('error');
+                        gameOver();
+                    }
+                    row.remove();
+                }
+            });
+
+            if (rows.length < MAX_ROWS && (rows.length === 0 || parseFloat(rows[0].style.top) > 0)) {
+                gameContainer.prepend(createRow(-rowHeightPercent));
+            }
+
+            animationFrameId = requestAnimationFrame(gameLoop);
+        }
+
+        // 开始游戏
+        function startGame() {
+            score = 0;
+            fallSpeed = 2.0;
+            speedStep = 0;
+            lastTwoBlackCols = [-1, -1];
+            currentScoreElement.textContent = `得分: ${score}`;
+            currentSpeedElement.textContent = `速度: ${fallSpeed.toFixed(1)}`;
+            gameContainer.innerHTML = '';
+            isPlaying = true;
+            startBtn.style.display = 'none';
+            animationFrameId = requestAnimationFrame(gameLoop);
+        }
+
+        // 游戏结束
+        function gameOver() {
+            isPlaying = false;
+            cancelAnimationFrame(animationFrameId);
+            
+            if (score > highestScore) {
+                highestScore = score;
+                setCookie(COOKIE_NAME, highestScore, COOKIE_EXPIRE_DAYS);
+                highestScoreElement.textContent = `最高分: ${highestScore}`;
+            }
+
+            setTimeout(() => {
+                startBtn.style.display = 'block';
+            }, 300);
+        }
+
+        // 设置弹窗事件
+        settingsBtn.addEventListener('click', () => {
+            settingsModal.style.display = 'flex';
+            // 同步开关状态
+            allowSameColSwitch.checked = allowSameCol;
+            darkModeSwitch.checked = isDarkMode;
+        });
+
+        modalCloseBtn.addEventListener('click', () => {
+            // 保存设置
+            allowSameCol = allowSameColSwitch.checked;
+            isDarkMode = darkModeSwitch.checked;
+            toggleDarkMode(isDarkMode);
+            settingsModal.style.display = 'none';
+        });
+
+        settingsModal.addEventListener('click', (e) => {
+            if (e.target === settingsModal) {
+                allowSameCol = allowSameColSwitch.checked;
+                isDarkMode = darkModeSwitch.checked;
+                toggleDarkMode(isDarkMode);
+                settingsModal.style.display = 'none';
+            }
+        });
+
+        // 页面初始化
+        window.onload = initHighestScore;
+        startBtn.addEventListener('click', startGame);
+        window.addEventListener('orientationchange', () => {
+            if (isPlaying) gameOver();
+        });
+
+        window.addEventListener('beforeunload', () => {
+            if (isPlaying) {
+                cancelAnimationFrame(animationFrameId);
+                gameContainer.innerHTML = '';
+            }
+        });
+    </script>
+</body>
+</html>
