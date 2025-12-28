@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>吨位件数互转</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            padding: 15px;
+        }
+
+        /* 头部样式 */
+        .fixed-header {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .view-ratio-btn {
+            padding: 10px 20px;
+            background-color: #409eff;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: background-color 0.2s;
+        }
+
+        .view-ratio-btn:hover {
+            background-color: #337ecc;
+        }
+
+        /* 容器样式 */
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* 品项行样式 */
+        .item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 15px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 12px;
+        }
+
+        .item-label {
+            width: 80px;
+            font-size: 15px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .item-input {
+            width: 120px;
+            padding: 8px 10px;
+            border: 1px solid #dcdfe6;
+            border-radius: 4px;
+            font-size: 14px;
+            text-align: right;
+            transition: border-color 0.2s;
+        }
+
+        .item-input:focus {
+            outline: none;
+            border-color: #409eff;
+            box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
+        }
+
+        /* 清空按钮样式 */
+        .clear-btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            background-color: #f56c6c;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .clear-btn:hover {
+            background-color: #e45656;
+        }
+
+        /* 弹窗样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .close {
+            color: #999;
+            float: right;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .modal-content h2 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        /* 表格样式 */
+        .ratio-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .ratio-table th, .ratio-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .ratio-table th {
+            background-color: #f8f9fa;
+            color: #666;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .ratio-table td {
+            color: #333;
+            font-size: 14px;
+        }
+
+        .extra-space {
+            height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="fixed-header">
+        <button class="view-ratio-btn" onclick="showRatioModal()">查看折吨比</button>
+    </div>
+    
+    <div class="container">
+        <div id="items-container">
+            <!-- 动态生成项目 -->
+        </div>
+        
+        <button class="clear-btn" onclick="clearAll()">清空</button>
+        
+        <div class="extra-space"></div>
+    </div>
+    
+    <div id="ratioModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeRatioModal()">&times;</span>
+            <h2>折吨比列表</h2>
+            <table class="ratio-table">
+                <thead>
+                    <tr>
+                        <th>牛奶名称</th>
+                        <th>折吨比 (件/吨)</th>
+                    </tr>
+                </thead>
+                <tbody id="ratio-table-body">
+                    <!-- 动态填充数据 -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        // 折吨比数据
+        const data = [
+            { name: '950', ratio: 85.082 },
+            { name: '780', ratio: 103.625 },
+            { name: '450', ratio: 143.694 },
+            { name: '430', ratio: 150.38 },
+            { name: '260', ratio: 149.22 },
+            { name: '5入', ratio: 80.828 },
+            { name: '12入', ratio: 404.14 },
+            { name: '小鲜', ratio: 449 },
+            { name: '一斤', ratio: 166.67 },
+            { name: '箱', ratio: 167 },
+            { name: '试饮', ratio: 269.426 }
+        ];
+
+        // 工具函数：简化版cookie操作
+        const util = {
+            setCookie: function(name, value, days) {
+                let expires = "";
+                if (days) {
+                    const date = new Date();
+                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                    expires = "; expires=" + date.toUTCString();
+                }
+                document.cookie = name + "=" + (value || "") + expires + "; path=/";
+            },
+            getCookie: function(name) {
+                const nameEQ = name + "=";
+                const ca = document.cookie.split(';');
+                for(let i=0;i < ca.length;i++) {
+                    let c = ca[i];
+                    while (c.charAt(0)==' ') c = c.substring(1,c.length);
+                    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+                }
+                return null;
+            },
+            removeCookie: function(name) {
+                document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+            },
+            // 验证是否为有效数字
+            isValidNumber: function(str) {
+                if (!str) return true;
+                return !isNaN(Number(str)) && isFinite(str);
+            }
+        };
+
+        // 页面加载初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePage();
+        });
+
+        function initializePage() {
+            const container = document.getElementById('items-container');
+            container.innerHTML = '';
+
+            data.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'item';
+                // 从cookie获取已保存的吨位和件数
+                const savedTon = util.getCookie(`${item.name}-ton`) || '';
+                const savedPiece = util.getCookie(`${item.name}-piece`) || '';
+                div.innerHTML = `
+                    <div class="item-label">${item.name}</div>
+                    <input type="number" step="any" class="item-input ton-input" 
+                           id="ton-${item.name}" 
+                           value="${savedTon}" 
+                           data-ratio="${item.ratio}" 
+                           placeholder="吨位">
+                    <input type="number" step="any" class="item-input piece-input" 
+                           id="piece-${item.name}" 
+                           value="${savedPiece}" 
+                           data-ratio="${item.ratio}" 
+                           placeholder="件数">
+                `;
+                container.appendChild(div);
+                // 绑定输入事件
+                document.getElementById(`ton-${item.name}`).addEventListener('input', () => onInputChange('ton', item.name));
+                document.getElementById(`piece-${item.name}`).addEventListener('input', () => onInputChange('piece', item.name));
+            });
+
+            fillRatioTable();
+        }
+
+        // 输入框变化时联动计算
+        function onInputChange(type, name) {
+            const ratio = data.find(item => item.name === name).ratio;
+            const tonInput = document.getElementById(`ton-${name}`);
+            const pieceInput = document.getElementById(`piece-${name}`);
+            let inputValue = type === 'ton' ? tonInput.value.trim() : pieceInput.value.trim();
+
+            // 验证输入是否为有效数字
+            if (!util.isValidNumber(inputValue)) {
+                type === 'ton' ? pieceInput.value = '输入有误' : tonInput.value = '输入有误';
+                return;
+            }
+
+            // 空值处理
+            if (inputValue === '') {
+                type === 'ton' ? pieceInput.value = '' : tonInput.value = '';
+                util.setCookie(`${name}-ton`, '', -1);
+                util.setCookie(`${name}-piece`, '', -1);
+                return;
+            }
+
+            const value = Number(inputValue);
+            let result;
+            // 吨位转件数: 件数 = 吨位 * 折吨比
+            // 件数转吨位: 吨位 = 件数 / 折吨比
+            if (type === 'ton') {
+                result = value * ratio;
+                pieceInput.value = result.toFixed(2);
+                util.setCookie(`${name}-ton`, value.toFixed(2), 30);
+                util.setCookie(`${name}-piece`, result.toFixed(2), 30);
+            } else {
+                result = value / ratio;
+                tonInput.value = result.toFixed(2);
+                util.setCookie(`${name}-piece`, value.toFixed(2), 30);
+                util.setCookie(`${name}-ton`, result.toFixed(2), 30);
+            }
+        }
+
+        // 清空所有输入
+        function clearAll() {
+            if (confirm('确定要清空所有输入吗？')) {
+                data.forEach(item => {
+                    const tonInput = document.getElementById(`ton-${item.name}`);
+                    const pieceInput = document.getElementById(`piece-${item.name}`);
+                    tonInput.value = '';
+                    pieceInput.value = '';
+                    util.removeCookie(`${item.name}-ton`);
+                    util.removeCookie(`${item.name}-piece`);
+                });
+            }
+        }
+
+        // 折吨比弹窗相关
+        function showRatioModal() {
+            document.getElementById('ratioModal').style.display = 'block';
+        }
+
+        function closeRatioModal() {
+            document.getElementById('ratioModal').style.display = 'none';
+        }
+
+        function fillRatioTable() {
+            const tbody = document.getElementById('ratio-table-body');
+            tbody.innerHTML = '';
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>${item.ratio}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // 点击弹窗外部关闭
+        window.onclick = function(event) {
+            const modal = document.getElementById('ratioModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
