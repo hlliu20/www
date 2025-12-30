@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>吨位件数互转（深色版）</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+        body { background: #1a1a1a; padding: 15px; color: #e0e0e0; }
+        .fixed-header { text-align: center; margin-bottom: 20px; }
+        .view-ratio-btn { padding: 10px 20px; background: #2196f3; color: #fff; border: none; border-radius: 6px; cursor: pointer; transition: background 0.2s; }
+        .view-ratio-btn:hover { background: #1976d2; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .item { display: flex; align-items: center; justify-content: space-between; padding: 12px 15px; background: #2d2d2d; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.3); margin-bottom: 12px; }
+        .item-label { width: 80px; font-weight: 500; color: #fff; }
+        .item-input { width: 120px; padding: 8px 10px; border: 1px solid #444; background: #333; color: #fff; border-radius: 4px; text-align: right; transition: border 0.2s; }
+        .item-input:focus { outline: none; border-color: #2196f3; box-shadow: 0 0 0 2px rgba(33,150,243,0.2); }
+        .clear-btn { width: 100%; padding: 12px; margin-top: 20px; background: #f44336; color: #fff; border: none; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+        .clear-btn:hover { background: #d32f2f; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 999; }
+        .modal-content { background: #2d2d2d; margin: 10% auto; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .close { float: right; font-size: 24px; font-weight: bold; cursor: pointer; color: #999; transition: color 0.2s; }
+        .close:hover { color: #fff; }
+        .modal-content h2 { font-size: 18px; color: #fff; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #444; }
+        .ratio-table { width: 100%; border-collapse: collapse; }
+        .ratio-table th, .ratio-table td { padding: 10px; text-align: left; border-bottom: 1px solid #444; }
+        .ratio-table th { background: #333; color: #ccc; font-size: 14px; }
+        .extra-space { height: 100px; }
+    </style>
+</head>
+<body>
+    <div class="fixed-header">
+        <button class="view-ratio-btn" onclick="showRatioModal()">查看折吨比</button>
+    </div>
+    <div class="container">
+        <div id="items-container"></div>
+        <button class="clear-btn" onclick="clearAll()">清空</button>
+        <div class="extra-space"></div>
+    </div>
+    <div id="ratioModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeRatioModal()">&times;</span>
+            <h2>折吨比列表</h2>
+            <table class="ratio-table">
+                <thead><tr><th>牛奶名称</th><th>折吨比 (件/吨)</th></tr></thead>
+                <tbody id="ratio-table-body"></tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        const data = [{name:'950',ratio:85.082},{name:'780',ratio:103.625},{name:'450',ratio:143.694},{name:'430',ratio:150.38},{name:'260',ratio:149.22},{name:'5入',ratio:80.828},{name:'12入',ratio:404.14},{name:'小鲜',ratio:449},{name:'一斤',ratio:166.67},{name:'箱',ratio:167},{name:'试饮',ratio:269.426}];
+        const util = {
+            setCookie:(n,v,d)=>{let e="";d&&(e="; expires="+new Date(Date.now()+d*86400000).toUTCString());document.cookie=n+"="+(v||"")+e+"; path=/"},
+            getCookie:n=>{let c=document.cookie.split(';');for(let i=0;i<c.length;i++){let a=c[i].trim();if(a.startsWith(n+"="))return a.slice(n.length+1)}},
+            removeCookie:n=>{document.cookie=n+'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;'},
+            isValidNumber:s=>!s||(!isNaN(Number(s))&&isFinite(s))
+        };
+        document.addEventListener('DOMContentLoaded', initializePage);
+        function initializePage() {
+            const container = document.getElementById('items-container');
+            container.innerHTML = '';
+            data.forEach(item => {
+                const savedTon = util.getCookie(`${item.name}-ton`) || '';
+                const savedPiece = util.getCookie(`${item.name}-piece`) || '';
+                const div = document.createElement('div');
+                div.className = 'item';
+                div.innerHTML = `<div class="item-label">${item.name}</div>
+                <input type="number" step="any" class="item-input ton-input" id="ton-${item.name}" value="${savedTon}" placeholder="吨位" oninput="onInputChange('ton', '${item.name}')">
+                <input type="number" step="any" class="item-input piece-input" id="piece-${item.name}" value="${savedPiece}" placeholder="件数" oninput="onInputChange('piece', '${item.name}')">`;
+                container.appendChild(div);
+            });
+            fillRatioTable();
+        }
+        function onInputChange(type, name) {
+            const ratio = data.find(item => item.name === name).ratio;
+            const tonInput = document.getElementById(`ton-${name}`);
+            const pieceInput = document.getElementById(`piece-${name}`);
+            const inputValue = type === 'ton' ? tonInput.value.trim() : pieceInput.value.trim();
+            if (!util.isValidNumber(inputValue)) {
+                type === 'ton' ? pieceInput.value = '输入有误' : tonInput.value = '输入有误';
+                return;
+            }
+            if (inputValue === '') {
+                tonInput.value = pieceInput.value = '';
+                util.setCookie(`${name}-ton`, '', -1);
+                util.setCookie(`${name}-piece`, '', -1);
+                return;
+            }
+            const value = Number(inputValue);
+            if (type === 'ton') {
+                const result = value * ratio;
+                pieceInput.value = result.toFixed(2);
+                util.setCookie(`${name}-ton`, value.toFixed(2), 30);
+                util.setCookie(`${name}-piece`, result.toFixed(2), 30);
+            } else {
+                const result = value / ratio;
+                tonInput.value = result.toFixed(2);
+                util.setCookie(`${name}-piece`, value.toFixed(2), 30);
+                util.setCookie(`${name}-ton`, result.toFixed(2), 30);
+            }
+        }
+        function clearAll() {
+            if (confirm('确定清空？')) {
+                data.forEach(item => {
+                    document.getElementById(`ton-${item.name}`).value = '';
+                    document.getElementById(`piece-${item.name}`).value = '';
+                    util.removeCookie(`${item.name}-ton`);
+                    util.removeCookie(`${item.name}-piece`);
+                });
+            }
+        }
+        function showRatioModal() { document.getElementById('ratioModal').style.display = 'block'; }
+        function closeRatioModal() { document.getElementById('ratioModal').style.display = 'none'; }
+        function fillRatioTable() {
+            const tbody = document.getElementById('ratio-table-body');
+            tbody.innerHTML = data.map(item => `<tr><td>${item.name}</td><td>${item.ratio}</td></tr>`).join('');
+        }
+        window.onclick = e => { if (e.target === document.getElementById('ratioModal')) closeRatioModal(); }
+    </script>
+</body>
+</html>
