@@ -1,0 +1,295 @@
+/* ===== 基础 ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --night-deep: #07071a;
+  --night-mid: #0f0f35;
+  --night-soft: #1a1a4e;
+  --purple: #2d1b69;
+  --gold: #ffd54f;
+  --gold-bright: #fff9c4;
+  --cyan: #4dd0e1;
+  --cyan-light: #80deea;
+  --text: #e8eaf6;
+  --text-dim: #9fa8da;
+  --glow-gold: rgba(255, 213, 79, 0.3);
+  --glow-cyan: rgba(77, 208, 225, 0.25);
+  --font-serif: "Noto Serif SC", "Songti SC", "STSong", serif;
+  --font-sans: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", "Consolas", monospace;
+}
+
+html, body { height: 100%; }
+
+body {
+  font-family: var(--font-sans);
+  background: radial-gradient(ellipse at 30% 20%, var(--purple) 0%, var(--night-mid) 40%, var(--night-deep) 100%);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+#star-canvas {
+  position: fixed; inset: 0; width: 100%; height: 100%;
+  pointer-events: none; z-index: 1;
+}
+
+.page {
+  position: relative; z-index: 3; min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 45px 20px 35px; text-align: center;
+}
+
+/* ===== 星座 ===== */
+.constellation {
+  width: 100%; max-width: 400px; margin-bottom: 25px; opacity: 0.7;
+}
+
+.constellation-svg { width: 100%; height: auto; }
+
+.cl-line { stroke: rgba(255,213,79,0.3); stroke-width: 1; }
+
+.cl-star { animation: starPulse 2.5s ease-in-out infinite; }
+.cl-star.gold { fill: var(--gold); filter: drop-shadow(0 0 4px var(--glow-gold)); }
+.cl-star.cyan { fill: var(--cyan-light); filter: drop-shadow(0 0 4px var(--glow-cyan)); }
+.cl-star:nth-of-type(1) { animation-delay: 0s; }
+.cl-star:nth-of-type(2) { animation-delay: 0.4s; }
+.cl-star:nth-of-type(3) { animation-delay: 0.8s; }
+.cl-star:nth-of-type(4) { animation-delay: 1.2s; }
+.cl-star:nth-of-type(5) { animation-delay: 1.6s; }
+.cl-star:nth-of-type(6) { animation-delay: 2s; }
+
+@keyframes starPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* ===== 标题 ===== */
+.header { margin-bottom: 38px; }
+
+.header-eyebrow {
+  font-size: 0.8rem; letter-spacing: 0.4em; color: var(--cyan);
+  opacity: 0.7; margin-bottom: 16px;
+  animation: fadeInDown 1s ease-out;
+}
+
+.header-title { font-family: var(--font-serif); margin-bottom: 8px; }
+
+.title-name {
+  font-size: clamp(2.5rem, 8vw, 4.2rem); font-weight: 900;
+  background: linear-gradient(135deg, var(--gold-bright) 0%, var(--gold) 50%, var(--cyan-light) 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.15em;
+  filter: drop-shadow(0 0 25px var(--glow-gold));
+}
+
+.header-subtitle {
+  font-size: clamp(1rem, 3vw, 1.4rem); color: var(--cyan-light);
+  letter-spacing: 0.5em; margin-bottom: 16px;
+  text-shadow: 0 0 15px var(--glow-cyan);
+}
+
+.header-date-wrap {
+  display: flex; align-items: center; justify-content: center; gap: 16px;
+}
+
+.date-sep { color: var(--gold); opacity: 0.5; font-size: 0.9rem; }
+
+.header-date {
+  font-family: var(--font-mono); font-size: clamp(1.1rem, 3vw, 1.5rem);
+  color: var(--gold); letter-spacing: 0.15em;
+  text-shadow: 0 0 15px var(--glow-gold);
+}
+
+/* ===== 倒计时卡片 ===== */
+.countdown {
+  display: flex; gap: clamp(10px, 2vw, 20px);
+  margin-bottom: 35px; flex-wrap: wrap; justify-content: center;
+}
+
+.cd-card {
+  position: relative;
+  min-width: clamp(70px, 15vw, 100px);
+  padding: 20px 16px 16px;
+  background: linear-gradient(145deg, rgba(26,26,78,0.5), rgba(15,15,53,0.7));
+  border: 1px solid rgba(255,213,79,0.2);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.08), 0 0 20px rgba(255,213,79,0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cd-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 30px var(--glow-gold);
+}
+
+.cd-card::before {
+  content: ""; position: absolute; top: 0; left: 15%; right: 15%; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  border-radius: 0 0 2px 2px;
+}
+
+.cd-value {
+  font-family: var(--font-mono); font-size: clamp(2rem, 6vw, 3.2rem);
+  font-weight: 700; color: var(--gold-bright);
+  text-shadow: 0 0 20px var(--glow-gold); line-height: 1.1; margin-bottom: 8px;
+  transition: transform 0.3s ease;
+}
+
+.cd-value.tick { animation: valueTick 0.35s ease-out; }
+
+@keyframes valueTick {
+  0% { transform: translateY(-8px); opacity: 0.3; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.cd-unit-label {
+  font-size: 0.6rem; letter-spacing: 0.25em; color: var(--cyan);
+  opacity: 0.7; margin-bottom: 4px;
+}
+
+.cd-unit-cn {
+  font-size: 0.85rem; color: var(--text-dim); letter-spacing: 0.2em;
+}
+
+/* ===== 环形进度 ===== */
+.ring-section { margin-bottom: 30px; }
+
+.ring-wrap { position: relative; width: 130px; height: 130px; }
+
+.ring-svg {
+  width: 100%; height: 100%; transform: rotate(-90deg);
+}
+
+.ring-bg {
+  fill: none; stroke: rgba(255,213,79,0.1); stroke-width: 6;
+}
+
+.ring-fill {
+  fill: none; stroke: var(--gold); stroke-width: 6;
+  stroke-linecap: round; stroke-dasharray: 326.7;
+  stroke-dashoffset: 326.7;
+  transition: stroke-dashoffset 1s ease;
+  filter: drop-shadow(0 0 6px var(--glow-gold));
+}
+
+.ring-center {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+
+.ring-pct {
+  font-family: var(--font-mono); font-size: 1.4rem; font-weight: 700;
+  color: var(--gold); text-shadow: 0 0 10px var(--glow-gold);
+}
+
+.ring-label {
+  font-size: 0.7rem; color: var(--text-dim); letter-spacing: 0.2em; margin-top: 2px;
+}
+
+/* ===== 智慧箴言轮播 ===== */
+.wisdom {
+  max-width: 550px; margin-bottom: 30px; padding: 0 10px;
+  min-height: 110px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+
+.wisdom-quote {
+  font-family: var(--font-serif); font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+  font-style: italic; color: var(--text); opacity: 0.9;
+  line-height: 2; margin-bottom: 10px;
+  transition: opacity 0.5s ease;
+}
+
+.wisdom-author {
+  font-size: 0.8rem; color: var(--cyan); letter-spacing: 0.1em;
+  opacity: 0.8; transition: opacity 0.5s ease;
+}
+
+.wisdom-dots {
+  display: flex; gap: 7px; margin-top: 14px;
+}
+
+.wisdom-dot {
+  width: 7px; height: 7px; border-radius: 50%; border: none; padding: 0;
+  background: rgba(255,213,79,0.25); cursor: pointer; transition: all 0.3s ease;
+}
+
+.wisdom-dot.active {
+  background: var(--gold); box-shadow: 0 0 8px var(--glow-gold);
+  transform: scale(1.3);
+}
+
+/* ===== 庆祝 ===== */
+.celebrate {
+  margin-bottom: 25px; animation: celebratePop 0.8s ease-out;
+}
+
+@keyframes celebratePop {
+  0% { transform: scale(0.5); opacity: 0; }
+  60% { transform: scale(1.08); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.celebrate-title {
+  font-family: var(--font-serif); font-size: clamp(1.5rem, 5vw, 2.4rem);
+  color: var(--gold); text-shadow: 0 0 30px var(--glow-gold); margin-bottom: 10px;
+}
+
+.celebrate-text {
+  font-size: 0.95rem; color: var(--cyan-light); letter-spacing: 0.1em;
+}
+
+/* ===== 页脚 ===== */
+.footer {
+  margin-top: auto; padding-top: 15px;
+}
+
+.footer p {
+  font-size: 0.78rem; color: var(--text-dim); opacity: 0.5;
+  letter-spacing: 0.2em; margin-bottom: 5px;
+}
+
+.footer-sub {
+  font-size: 0.72rem !important; opacity: 0.4 !important; color: var(--gold) !important;
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 480px) {
+  .page { padding: 30px 14px 25px; }
+  .countdown { gap: 8px; }
+  .cd-card { min-width: 65px; padding: 16px 10px 12px; }
+  .cd-value { font-size: 1.7rem; }
+  .ring-wrap { width: 110px; height: 110px; }
+  .header { margin-bottom: 28px; }
+}
+
+/* ===== 音乐按钮 ===== */
+.music-toggle {
+  position: fixed; top: 18px; right: 18px; z-index: 100;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,213,79,0.3);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--gold); font-size: 20px;
+  transition: all 0.3s ease; backdrop-filter: blur(6px);
+}
+.music-toggle:hover { background: rgba(255,213,79,0.15); border-color: var(--gold); }
+.music-toggle.playing .music-icon { animation: musicSpin 3s linear infinite; display: inline-block; }
+.music-toggle.paused { opacity: 0.45; }
+@keyframes musicSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

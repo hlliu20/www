@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>纳西妲生日快乐 · 星空智慧</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⭐</text></svg>">
+<link rel="stylesheet" href="css/nahida2026-2.css">
+</head>
+<body>
+
+<!-- 音乐播放 -->
+<div class="music-toggle" id="music-toggle" title="音乐开关">
+  <span class="music-icon">♪</span>
+</div>
+<audio id="bg-music" src="static/nahida_0.mp3" loop preload="auto"></audio>
+
+<canvas id="star-canvas" aria-hidden="true"></canvas>
+
+<!-- ===== Hero ===== -->
+<header class="hero">
+  <div class="hero-stars" aria-hidden="true"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">★ 10 · 27 ★</p>
+    <h1 class="hero-title">
+      <span class="title-main">纳西妲</span>
+      <span class="title-line">生日快乐</span>
+    </h1>
+    <div class="hero-constellation" aria-hidden="true">
+      <svg viewBox="0 0 300 80" class="constellation-svg">
+        <line x1="30" y1="40" x2="90" y2="20" stroke="rgba(255,213,79,0.4)" stroke-width="1"/>
+        <line x1="90" y1="20" x2="150" y2="50" stroke="rgba(255,213,79,0.4)" stroke-width="1"/>
+        <line x1="150" y1="50" x2="210" y2="25" stroke="rgba(255,213,79,0.4)" stroke-width="1"/>
+        <line x1="210" y1="25" x2="270" y2="45" stroke="rgba(255,213,79,0.4)" stroke-width="1"/>
+        <circle cx="30" cy="40" r="3" fill="#ffd54f"/>
+        <circle cx="90" cy="20" r="4" fill="#ffd54f"/>
+        <circle cx="150" cy="50" r="3" fill="#80deea"/>
+        <circle cx="210" cy="25" r="4" fill="#ffd54f"/>
+        <circle cx="270" cy="45" r="3" fill="#80deea"/>
+      </svg>
+    </div>
+    <p class="hero-subtitle">智慧之神 · 小吉祥草王 · 须弥</p>
+  </div>
+  <div class="scroll-indicator" aria-hidden="true">
+    <span class="scroll-dot"></span>
+    <span class="scroll-label">SCROLL</span>
+  </div>
+</header>
+
+<!-- ===== 智慧箴言（定时轮播） ===== -->
+<section class="quotes-section">
+  <div class="section-inner">
+    <h2 class="section-heading">
+      <span class="heading-line"></span>
+      <span class="heading-text">智慧箴言</span>
+      <span class="heading-line"></span>
+    </h2>
+    <div class="quote-carousel">
+      <blockquote class="quote-active">
+        <p class="quote-text" id="quote-text">加载中…</p>
+        <footer class="quote-author" id="quote-author">—— 纳西妲</footer>
+      </blockquote>
+      <div class="quote-nav">
+        <button class="quote-btn" id="quote-prev" aria-label="上一条">‹</button>
+        <div class="quote-dots" id="quote-dots"></div>
+        <button class="quote-btn" id="quote-next" aria-label="下一条">›</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 星轨历程 ===== -->
+<section class="timeline-section">
+  <div class="section-inner">
+    <h2 class="section-heading">
+      <span class="heading-line"></span>
+      <span class="heading-text">星轨历程</span>
+      <span class="heading-line"></span>
+    </h2>
+    <div class="timeline">
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <span class="timeline-era">起源</span>
+          <h3>智慧之神的诞生</h3>
+          <p>大慈树王耗尽力量消除禁忌知识，将自己的一切托付给新生的小草神——纳西妲。她承载着须弥的未来，也承载着无人知晓的孤独。</p>
+        </div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <span class="timeline-era">囚禁</span>
+          <h3>净善宫中的岁月</h3>
+          <p>被教令院囚禁在净善宫深处，五百年间无法踏出一步。但她从未停止学习，通过梦境观察着须弥的一切，用智慧对抗着孤独。</p>
+        </div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <span class="timeline-era">觉醒</span>
+          <h3>打破囚笼的时刻</h3>
+          <p>在旅行者与众人的帮助下，她终于走出净善宫，以智慧之神的身份重新站在须弥人民面前。那一刻，整个须弥都为她欢呼。</p>
+        </div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <span class="timeline-era">此刻</span>
+          <h3>10月27日 · 生日快乐</h3>
+          <p>今天，我们为她庆祝生日。愿她的智慧如星辰般永恒闪耀，愿她的笑容如春风般温暖每一个人。纳西妲，生日快乐！</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 星空许愿 ===== -->
+<section class="wish-section">
+  <div class="section-inner">
+    <h2 class="section-heading">
+      <span class="heading-line"></span>
+      <span class="heading-text">星空许愿</span>
+      <span class="heading-line"></span>
+    </h2>
+    <p class="wish-intro reveal">点击夜空中的星星，为纳西妲许下一个生日愿望</p>
+    <div class="wish-stars reveal" id="wish-stars"></div>
+    <div class="wish-display" id="wish-display">
+      <p class="wish-placeholder">✨ 点击上方星星，许下你的心愿 ✨</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 页脚 ===== -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-constellation" aria-hidden="true">
+      <span class="f-star">✦</span><span class="f-star">✧</span><span class="f-star">✦</span>
+    </div>
+    <p class="footer-title">纳西妲 · 生日快乐</p>
+    <p class="footer-date">10.27</p>
+    <p class="footer-wish">愿智慧之光永远照耀须弥</p>
+  </div>
+</footer>
+
+<script src="js/nahida2026-2.js"></script>
+</body>
+</html>

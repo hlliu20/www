@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>纳西妲生日倒计时 · 2027.10.27</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⭐</text></svg>">
+<link rel="stylesheet" href="css/nahida2027-2.css">
+</head>
+<body>
+
+<!-- 音乐播放 -->
+<div class="music-toggle" id="music-toggle" title="音乐开关">
+  <span class="music-icon">♪</span>
+</div>
+<audio id="bg-music" src="static/nahida_0.mp3" loop preload="auto"></audio>
+
+<canvas id="star-canvas" aria-hidden="true"></canvas>
+
+<main class="page">
+  <div class="constellation" aria-hidden="true">
+    <svg viewBox="0 0 400 120" class="constellation-svg">
+      <line x1="40" y1="60" x2="110" y2="30" class="cl-line"/>
+      <line x1="110" y1="30" x2="180" y2="70" class="cl-line"/>
+      <line x1="180" y1="70" x2="250" y2="35" class="cl-line"/>
+      <line x1="250" y1="35" x2="320" y2="65" class="cl-line"/>
+      <line x1="320" y1="65" x2="370" y2="40" class="cl-line"/>
+      <circle cx="40" cy="60" r="3.5" class="cl-star gold"/>
+      <circle cx="110" cy="30" r="4.5" class="cl-star gold"/>
+      <circle cx="180" cy="70" r="3" class="cl-star cyan"/>
+      <circle cx="250" cy="35" r="4.5" class="cl-star gold"/>
+      <circle cx="320" cy="65" r="3" class="cl-star cyan"/>
+      <circle cx="370" cy="40" r="3.5" class="cl-star gold"/>
+    </svg>
+  </div>
+
+  <header class="header">
+    <p class="header-eyebrow">★ 智慧之神 · 小吉祥草王 ★</p>
+    <h1 class="header-title"><span class="title-name">纳西妲</span></h1>
+    <p class="header-subtitle">生日倒计时</p>
+    <div class="header-date-wrap">
+      <span class="date-sep">—</span>
+      <span class="header-date">2027.10.27</span>
+      <span class="date-sep">—</span>
+    </div>
+  </header>
+
+  <section class="countdown" id="countdown">
+    <div class="cd-card">
+      <div class="cd-value" id="days">000</div>
+      <div class="cd-unit-label">DAYS</div>
+      <div class="cd-unit-cn">天</div>
+    </div>
+    <div class="cd-card">
+      <div class="cd-value" id="hours">00</div>
+      <div class="cd-unit-label">HOURS</div>
+      <div class="cd-unit-cn">时</div>
+    </div>
+    <div class="cd-card">
+      <div class="cd-value" id="minutes">00</div>
+      <div class="cd-unit-label">MINUTES</div>
+      <div class="cd-unit-cn">分</div>
+    </div>
+    <div class="cd-card">
+      <div class="cd-value" id="seconds">00</div>
+      <div class="cd-unit-label">SECONDS</div>
+      <div class="cd-unit-cn">秒</div>
+    </div>
+  </section>
+
+  <section class="ring-section">
+    <div class="ring-wrap">
+      <svg class="ring-svg" viewBox="0 0 120 120">
+        <circle class="ring-bg" cx="60" cy="60" r="52"/>
+        <circle class="ring-fill" id="ring-fill" cx="60" cy="60" r="52"/>
+      </svg>
+      <div class="ring-center">
+        <span class="ring-pct" id="ring-pct">0%</span>
+        <span class="ring-label">已等待</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 智慧箴言（定时轮播） -->
+  <section class="wisdom">
+    <blockquote class="wisdom-quote" id="wisdom-quote">加载中…</blockquote>
+    <p class="wisdom-author" id="wisdom-author">—— 纳西妲</p>
+    <div class="wisdom-dots" id="wisdom-dots"></div>
+  </section>
+
+  <section class="celebrate" id="celebrate" hidden>
+    <h2 class="celebrate-title">✨ 纳西妲 · 生日快乐 ✨</h2>
+    <p class="celebrate-text">2027.10.27 · 愿智慧之光永恒闪耀</p>
+  </section>
+
+  <footer class="footer">
+    <p>须弥 · 净善宫 · 智慧之神</p>
+    <p class="footer-sub">✦ 愿星辰为你指引方向 ✦</p>
+  </footer>
+</main>
+
+<script src="js/nahida2027-2.js"></script>
+</body>
+</html>

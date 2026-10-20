@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>纳西妲生日快乐 · 梦境童话</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💫</text></svg>">
+<link rel="stylesheet" href="css/nahida2026-5.css">
+</head>
+<body>
+
+<!-- 音乐播放 -->
+<div class="music-toggle" id="music-toggle" title="音乐开关">
+  <span class="music-icon">♪</span>
+</div>
+<audio id="bg-music" src="static/nahida_0.mp3" loop preload="auto"></audio>
+
+<!-- 梦幻气泡画布 -->
+<canvas id="dream-canvas" aria-hidden="true"></canvas>
+
+<!-- 云朵装饰 -->
+<div class="clouds" aria-hidden="true">
+  <span class="cloud c1">☁️</span>
+  <span class="cloud c2">☁️</span>
+  <span class="cloud c3">☁️</span>
+</div>
+
+<main class="page">
+  <!-- Hero -->
+  <header class="hero">
+    <div class="hero-content">
+      <div class="hero-stars" aria-hidden="true">
+        <span class="hs s1">✦</span><span class="hs s2">✧</span><span class="hs s3">✦</span>
+        <span class="hs s4">✧</span><span class="hs s5">✦</span>
+      </div>
+      <p class="hero-eyebrow">~ 梦境之国的邀请 ~</p>
+      <h1 class="hero-title">
+        <span class="title-line1">纳西妲</span>
+        <span class="title-line2">生日快乐</span>
+      </h1>
+      <p class="hero-date">10 · 27</p>
+      <div class="hero-rainbow" aria-hidden="true"></div>
+      <p class="hero-tag">在梦里，一切皆有可能 ✨</p>
+    </div>
+  </header>
+
+  <!-- 智慧箴言 -->
+  <section class="quote-section">
+    <div class="section-inner">
+      <h2 class="section-title">💭 梦里的悄悄话 💭</h2>
+      <div class="quote-bubble">
+        <p class="quote-text" id="quote-text">加载中…</p>
+        <p class="quote-author" id="quote-author">—— 纳西妲</p>
+      </div>
+      <div class="quote-dots" id="quote-dots"></div>
+    </div>
+  </section>
+
+  <!-- 梦境卡片 -->
+  <section class="dream-section">
+    <div class="section-inner">
+      <h2 class="section-title">🌈 梦境图鉴 🌈</h2>
+      <div class="dream-grid">
+        <div class="dream-card reveal">
+          <div class="dream-emoji">🏰</div>
+          <h3>糖果城堡</h3>
+          <p>梦里有一座用枣椰蜜糖砌成的城堡，推开每一扇门，都是一个新的故事。</p>
+        </div>
+        <div class="dream-card reveal">
+          <div class="dream-emoji">🌙</div>
+          <h3>月亮秋千</h3>
+          <p>坐在弯弯的月亮上荡秋千，星星就在手边，一伸手就能摘下一颗。</p>
+        </div>
+        <div class="dream-card reveal">
+          <div class="dream-emoji">🦋</div>
+          <h3>蝴蝶花园</h3>
+          <p>成千上万只蝴蝶组成花海，每一只翅膀上都写着一个未被讲述的故事。</p>
+        </div>
+        <div class="dream-card reveal">
+          <div class="dream-emoji">🎈</div>
+          <h3>气球旅行</h3>
+          <p>抓着一束气球飘向天空，风会带你去任何你想去的地方。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 生日蛋糕 -->
+  <section class="cake-section">
+    <div class="section-inner">
+      <h2 class="section-title">🎂 许个愿吧 🎂</h2>
+      <div class="dream-cake" id="dream-cake">
+        <div class="dcandle">
+          <div class="dflame" id="dflame"></div>
+        </div>
+        <div class="dlayer dtop"></div>
+        <div class="dlayer dmid"></div>
+        <div class="dlayer dbot"></div>
+        <div class="dplate"></div>
+      </div>
+      <p class="cake-hint">点击蛋糕吹灭蜡烛</p>
+      <p class="cake-msg" id="cake-msg">愿望会在梦里实现的 💫</p>
+    </div>
+  </section>
+
+  <!-- 页脚 -->
+  <footer class="footer">
+    <p>💤 纳西妲 · 生日快乐 💤</p>
+    <p class="footer-sub">愿你的每一个梦都甜如蜜糖</p>
+  </footer>
+</main>
+
+<script src="js/nahida2026-5.js"></script>
+</body>
+</html>

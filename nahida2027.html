@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>纳西妲生日倒计时 · 2027.10.27</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+<link rel="stylesheet" href="css/nahida2027.css">
+</head>
+<body>
+
+<!-- 音乐播放 -->
+<div class="music-toggle" id="music-toggle" title="音乐开关">
+  <span class="music-icon">♪</span>
+</div>
+<audio id="bg-music" src="static/nahida_0.mp3" loop preload="auto"></audio>
+
+<canvas id="bg-canvas" aria-hidden="true"></canvas>
+<div id="leaves" aria-hidden="true"></div>
+
+<main class="page">
+  <div class="top-ornament" aria-hidden="true"><span class="ornament-vine">❦</span></div>
+
+  <header class="header">
+    <p class="header-eyebrow">须弥 · 智慧之神</p>
+    <h1 class="header-title">
+      <span class="title-name">纳西妲</span>
+      <span class="title-sep">·</span>
+      <span class="title-event">生日倒计时</span>
+    </h1>
+    <p class="header-date">2027 年 10 月 27 日</p>
+  </header>
+
+  <section class="countdown" id="countdown">
+    <div class="cd-unit">
+      <div class="cd-flip"><span class="cd-digit" id="days">000</span></div>
+      <span class="cd-label">天</span>
+    </div>
+    <div class="cd-unit">
+      <div class="cd-flip"><span class="cd-digit" id="hours">00</span></div>
+      <span class="cd-label">时</span>
+    </div>
+    <div class="cd-unit">
+      <div class="cd-flip"><span class="cd-digit" id="minutes">00</span></div>
+      <span class="cd-label">分</span>
+    </div>
+    <div class="cd-unit">
+      <div class="cd-flip"><span class="cd-digit" id="seconds">00</span></div>
+      <span class="cd-label">秒</span>
+    </div>
+  </section>
+
+  <section class="progress-wrap">
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    <p class="progress-text" id="progress-text">距离生日还有…</p>
+  </section>
+
+  <!-- 智慧箴言（定时轮播） -->
+  <section class="quote-box">
+    <p class="quote-text" id="quote-text">加载中…</p>
+    <p class="quote-author" id="quote-author">—— 纳西妲</p>
+    <div class="quote-dots" id="quote-dots"></div>
+  </section>
+
+  <section class="celebrate" id="celebrate" hidden>
+    <h2 class="celebrate-title">🎉 纳西妲，生日快乐！🎉</h2>
+    <p class="celebrate-text">2027年10月27日，愿智慧之光永远照耀你</p>
+  </section>
+
+  <footer class="footer">
+    <p>小吉祥草王 · 须弥的智慧之神</p>
+    <p class="footer-sub">🌿 愿森林永远守护你 🌿</p>
+  </footer>
+</main>
+
+<script src="js/nahida2027.js"></script>
+</body>
+</html>

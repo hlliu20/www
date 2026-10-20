@@ -1,0 +1,283 @@
+/* ===== 基础 ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg-deep: #061408;
+  --bg-mid: #0d2818;
+  --bg-soft: #143d24;
+  --grass: #7cb342;
+  --grass-light: #aed581;
+  --grass-pale: #dcedc8;
+  --gold: #ffd54f;
+  --gold-soft: #fff8e1;
+  --glow: rgba(124, 179, 66, 0.35);
+  --glow-gold: rgba(255, 213, 79, 0.3);
+  --font-serif: "Noto Serif SC", "Songti SC", "STSong", serif;
+  --font-sans: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", "Consolas", monospace;
+}
+
+html, body { height: 100%; }
+
+body {
+  font-family: var(--font-sans);
+  background: radial-gradient(ellipse at 50% 0%, var(--bg-soft) 0%, var(--bg-mid) 45%, var(--bg-deep) 100%);
+  color: var(--grass-pale);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+#bg-canvas {
+  position: fixed; inset: 0; width: 100%; height: 100%;
+  pointer-events: none; z-index: 1;
+}
+
+#leaves {
+  position: fixed; inset: 0; pointer-events: none; z-index: 2; overflow: hidden;
+}
+
+.leaf {
+  position: absolute; top: -30px; font-size: 16px; opacity: 0;
+  animation: leafFall linear infinite;
+  filter: drop-shadow(0 0 5px var(--glow));
+}
+
+@keyframes leafFall {
+  0% { transform: translateY(0) rotate(0deg) translateX(0); opacity: 0; }
+  10% { opacity: 0.7; }
+  90% { opacity: 0.5; }
+  100% { transform: translateY(105vh) rotate(720deg) translateX(60px); opacity: 0; }
+}
+
+.page {
+  position: relative; z-index: 3; min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 50px 20px 40px; text-align: center;
+}
+
+.top-ornament { margin-bottom: 20px; }
+
+.ornament-vine {
+  font-size: 1.8rem; color: var(--grass);
+  animation: vineSway 3s ease-in-out infinite; display: inline-block;
+}
+
+@keyframes vineSway {
+  0%, 100% { transform: rotate(-8deg); }
+  50% { transform: rotate(8deg); }
+}
+
+.header { margin-bottom: 45px; }
+
+.header-eyebrow {
+  font-size: 0.85rem; letter-spacing: 0.5em; color: var(--grass);
+  opacity: 0.7; margin-bottom: 14px;
+  animation: fadeInDown 1s ease-out;
+}
+
+.header-title { font-family: var(--font-serif); margin-bottom: 14px; }
+
+.title-name {
+  font-size: clamp(2.2rem, 7vw, 3.8rem); font-weight: 900;
+  color: var(--grass-light);
+  text-shadow: 0 0 30px var(--glow), 0 0 60px rgba(124,179,66,0.2);
+  letter-spacing: 0.12em;
+}
+
+.title-sep {
+  color: var(--gold); margin: 0 12px;
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.title-event {
+  font-size: clamp(1.4rem, 4.5vw, 2.2rem); font-weight: 600;
+  color: var(--gold-soft); letter-spacing: 0.25em;
+  text-shadow: 0 0 20px var(--glow-gold);
+}
+
+.header-date {
+  font-family: var(--font-serif); font-size: clamp(1rem, 3vw, 1.3rem);
+  color: var(--gold); letter-spacing: 0.3em;
+  text-shadow: 0 0 15px var(--glow-gold);
+  animation: fadeIn 1.2s ease-out 0.3s both;
+}
+
+.countdown {
+  display: flex; gap: clamp(10px, 2.5vw, 24px);
+  margin-bottom: 40px; flex-wrap: wrap; justify-content: center;
+}
+
+.cd-unit {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+}
+
+.cd-flip {
+  position: relative;
+  min-width: clamp(65px, 14vw, 110px);
+  height: clamp(80px, 16vw, 130px);
+  background: linear-gradient(180deg, rgba(20,61,36,0.9), rgba(13,40,24,0.95));
+  border: 1px solid rgba(124,179,66,0.3);
+  border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4), inset 0 1px 0 rgba(174,213,129,0.15), 0 0 20px var(--glow);
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+
+.cd-flip::before {
+  content: ""; position: absolute; top: 50%; left: 0; right: 0;
+  height: 1px; background: rgba(0,0,0,0.4); z-index: 2;
+}
+
+.cd-flip::after {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), transparent);
+  pointer-events: none; z-index: 1;
+}
+
+.cd-digit {
+  font-family: var(--font-mono); font-size: clamp(2rem, 6vw, 3.6rem);
+  font-weight: 700; color: var(--grass-pale);
+  text-shadow: 0 0 15px var(--glow); letter-spacing: 0.02em; line-height: 1;
+  transition: transform 0.3s ease;
+}
+
+.cd-digit.flip { animation: digitFlip 0.4s ease-in-out; }
+
+@keyframes digitFlip {
+  0% { transform: rotateX(0); }
+  50% { transform: rotateX(90deg); opacity: 0.3; }
+  100% { transform: rotateX(0); }
+}
+
+.cd-label {
+  font-size: clamp(0.8rem, 2vw, 1rem); letter-spacing: 0.3em;
+  color: var(--grass); opacity: 0.8;
+}
+
+.progress-wrap {
+  width: 100%; max-width: 500px; margin-bottom: 35px;
+}
+
+.progress-track {
+  width: 100%; height: 6px;
+  background: rgba(124,179,66,0.12); border-radius: 3px; overflow: hidden;
+  border: 1px solid rgba(124,179,66,0.2);
+}
+
+.progress-fill {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--grass), var(--grass-light), var(--gold));
+  border-radius: 3px; box-shadow: 0 0 10px var(--glow);
+  transition: width 1s ease; position: relative;
+}
+
+.progress-fill::after {
+  content: ""; position: absolute; right: 0; top: 50%;
+  transform: translateY(-50%); width: 10px; height: 10px;
+  border-radius: 50%; background: var(--gold);
+  box-shadow: 0 0 12px var(--glow-gold);
+}
+
+.progress-text {
+  margin-top: 10px; font-size: 0.85rem; color: var(--grass);
+  opacity: 0.7; letter-spacing: 0.1em;
+}
+
+/* ===== 智慧箴言轮播 ===== */
+.quote-box {
+  max-width: 600px; margin-bottom: 35px; padding: 0 10px;
+  min-height: 120px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+
+.quote-text {
+  font-family: var(--font-serif); font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+  font-style: italic; color: var(--grass-pale); opacity: 0.9;
+  line-height: 2; margin-bottom: 10px;
+  transition: opacity 0.5s ease;
+}
+
+.quote-author {
+  font-size: 0.8rem; color: var(--gold); letter-spacing: 0.1em;
+  opacity: 0.8; transition: opacity 0.5s ease;
+}
+
+.quote-dots {
+  display: flex; gap: 7px; margin-top: 14px;
+}
+
+.quote-dot {
+  width: 7px; height: 7px; border-radius: 50%; border: none; padding: 0;
+  background: rgba(124,179,66,0.3); cursor: pointer; transition: all 0.3s ease;
+}
+
+.quote-dot.active {
+  background: var(--grass-light); box-shadow: 0 0 8px var(--glow);
+  transform: scale(1.3);
+}
+
+.celebrate {
+  margin-bottom: 30px; animation: celebratePop 0.8s ease-out;
+}
+
+@keyframes celebratePop {
+  0% { transform: scale(0.5); opacity: 0; }
+  60% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.celebrate-title {
+  font-family: var(--font-serif); font-size: clamp(1.6rem, 5vw, 2.5rem);
+  color: var(--gold); text-shadow: 0 0 30px var(--glow-gold); margin-bottom: 12px;
+}
+
+.celebrate-text {
+  font-size: 1rem; color: var(--grass-light); letter-spacing: 0.1em;
+}
+
+.footer {
+  margin-top: auto; padding-top: 20px;
+}
+
+.footer p {
+  font-size: 0.8rem; color: var(--grass); opacity: 0.5;
+  letter-spacing: 0.2em; margin-bottom: 6px;
+}
+
+.footer-sub {
+  font-size: 0.75rem !important; opacity: 0.4 !important;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeInDown { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (max-width: 480px) {
+  .page { padding: 35px 14px 30px; }
+  .countdown { gap: 8px; }
+  .cd-flip { min-width: 60px; height: 75px; }
+  .cd-digit { font-size: 1.8rem; }
+  .header { margin-bottom: 30px; }
+}
+
+/* ===== 音乐按钮 ===== */
+.music-toggle {
+  position: fixed; top: 18px; right: 18px; z-index: 100;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(124,179,66,0.3);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--grass-light); font-size: 20px;
+  transition: all 0.3s ease; backdrop-filter: blur(6px);
+}
+.music-toggle:hover { background: rgba(124,179,66,0.2); border-color: var(--grass); }
+.music-toggle.playing .music-icon { animation: musicSpin 3s linear infinite; display: inline-block; }
+.music-toggle.paused { opacity: 0.45; }
+@keyframes musicSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
